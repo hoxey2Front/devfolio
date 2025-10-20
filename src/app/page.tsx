@@ -223,7 +223,7 @@ export default function Home() {
               {skills.map((skill) => (
                 <motion.div // 개별 스킬 카드에도 stagger 효과를 위해 motion 적용
                   key={skill.name}
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.3 }}
@@ -243,12 +243,12 @@ export default function Home() {
           <AnimateOnScroll id="education">
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">🎓 교육</h2>
             {educationData.map((item, index) => (
-              <motion.div // 개별 교육 항목에도 stagger 효과를 위해 motion 적용
-                key={index}
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.15, duration: 0.4 }}
+                transition={{ duration: 0.3 }}
+                key={index}
                 className="p-4 rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 transition-all duration-300 hover:scale-102 space-y-2"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -272,12 +272,12 @@ export default function Home() {
           <AnimateOnScroll id="prize">
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">🏆 대회</h2>
             {prizeData.map((item, index) => (
-              <motion.div // 개별 대회 항목에도 stagger 효과를 위해 motion 적용
-                key={index}
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4 }}
+                transition={{ duration: 0.3 }}
+                key={index}
                 className="p-4 rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 transition-all duration-300 hover:scale-102 space-y-2"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">

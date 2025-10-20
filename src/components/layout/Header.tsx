@@ -43,7 +43,7 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
                 hidden sm:flex 
                 
                 /* showMiniProfile 상태에 따라 투명도와 크기 조절 */
-                ${showMiniProfile ? 'opacity-100 scale-100' : 'opacity-0 scale-50'} 
+                ${showMiniProfile ? 'opacity-100 scale-100' : 'opacity-0 scale-90'} 
             `}
         >
           {/* 이미지 컨테이너 (크기 유지) */}
