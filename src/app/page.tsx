@@ -9,7 +9,7 @@ import React, { useCallback, useEffect } from 'react';
 import { motion, useInView, useAnimation, Variants } from 'framer-motion';
 
 // 아이콘: lucide-react에서 임시로 사용
-import { GitBranch, Type, Code, Rocket, Mail, Phone, Rss, Github, Book, FlaskConical, Database, TreePalm } from 'lucide-react';
+import { GitBranch, Type, Code, Rocket, Book, FlaskConical, Database, TreePalm } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // *******************************************************************
@@ -153,9 +153,9 @@ export default function Home() {
             initial="hidden"
             animate="visible"
             variants={profileVariants}
-            className="space-y-4 text-center"
+            className="space-y-2 md:space-y-3 lg:space-y-4 text-center"
           >
-            <div className="w-32 h-32 rounded-full mx-auto overflow-hidden">
+            <div className="w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full mx-auto overflow-hidden">
               <Image
                 src="/image/nomad_coder.png"
                 width={500}
@@ -163,25 +163,25 @@ export default function Home() {
                 alt="profile"
               />
             </div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tighter text-white">장한옥</h1>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tighter text-white">장한옥</h1>
             <div id="in-view-detector" className="h-1 bg-transparent w-full -mt-2" />
-            <p className="text-lg sm:text-xl font-medium text-indigo-400">Front-End Developer</p>
+            <p className="text-base md:text-lg lg:text-xl font-medium text-indigo-400">Front-End Developer</p>
 
-            <p className="text-base sm:text-lg text-gray-400 mt-2 max-w-2xl mx-auto">
+            <p className="text-sm md:text-base lg:text-lg text-gray-400 mt-2 max-w-2xl mx-auto">
               협업과 효율성으로 더 나은 서비스를 완성해나가는 개발자입니다.
             </p>
 
             {/* CTA 버튼 (PDF 생성 및 다운로드 기능 연결) */}
-            <div className="flex justify-center gap-4 mt-6 print-hidden">
-              <Button className='text-base font-semibold'>
-                <Link href="mailto:hoxey2react@gmail.com" className='px-6 py-3'>
+            <div className="flex justify-center gap-4 md:gap-6 lg:gap-8 mt-6 lg:mt-8 print-hidden">
+              <Button className='text-sm md:text-base lg:text-lg font-semibold'>
+                <Link href="mailto:hoxey2react@gmail.com" className='px-2 py-1 md:px-4 md:py-2 lg:px-6 lg:py-3'>
                   메일 보내기
                 </Link>
               </Button>
               <Button
                 variant={'outline'}
                 onClick={handleDownloadPdf}
-                className="px-6 py-3 text-base font-semibold"
+                className="px-2 py-1 md:px-4 md:py-2 lg:px-6 lg:py-3 text-sm md:text-base lg:text-lg font-semibold"
               >
                 PDF로 저장
               </Button>
@@ -192,8 +192,8 @@ export default function Home() {
 
           {/* 1. 간단소개 섹션에 애니메이션 적용 */}
           <AnimateOnScroll id="intro">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">☝️ 간단소개</h2>
-            <p className="leading-relaxed text-base text-gray-400">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6">☝️ 간단소개</h2>
+            <p className="leading-relaxed text-sm md:text-base text-gray-400">
               저는 <b>사용자 경험</b>과 <b>성능 개선</b>에 집중하며 개발을 진행하고있습니다.
               최근 유행하는 트렌드를 공부해 프로젝트에 적용하려고 노력하고 있으며,
               <b>바이브 코딩</b>을 통해 필요한 곳에 시간을 투자하는 방식으로 개발하고 있습니다.
@@ -205,8 +205,8 @@ export default function Home() {
 
           {/* 2. 저는 이런 사람이에요 섹션에 애니메이션 적용 */}
           <AnimateOnScroll id="iam">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">🙋 저는 이런 사람이에요</h2>
-            <ul className="list-disc pl-5 text-base text-gray-400 space-y-3">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6">🙋 저는 이런 사람이에요</h2>
+            <ul className="list-disc pl-5 text-sm md:text-base text-gray-400 space-y-3">
               <li>안녕하세요! <b>꾸준히 성장하는 개발자</b> 장한옥입니다.</li>
               <li>새로운 기술에 거부감이 없고 적극성을 갖고 참여합니다.</li>
               <li>단 한 줄의 코드라도 서비스의 가치를 담으려고 노력합니다.</li>
@@ -218,20 +218,24 @@ export default function Home() {
 
           {/* 3. 스킬 섹션에 애니메이션 적용 */}
           <AnimateOnScroll id="skills">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">⚙️ 스킬</h2>
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6">⚙️ 스킬</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
               {skills.map((skill) => (
-                <motion.div // 개별 스킬 카드에도 stagger 효과를 위해 motion 적용
+                <motion.div
                   key={skill.name}
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.3 }}
                   className="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-700 bg-gray-800 hover:bg-gray-700 transition-all duration-300 hover:scale-102
-                    hover:-rotate-2 shadow-lg"
+                    hover:-rotate-2 shadow-lg group"
                 >
-                  <skill.icon className="w-8 h-8 text-indigo-400 mb-2" />
-                  <span className="text-sm font-medium text-gray-200">{skill.name}</span>
+                  {/* 💡 최종 수정: `fill`과 `stroke`를 `currentColor`로 설정하여 호버 시 채워진 효과를 확실하게 적용 */}
+                  <skill.icon
+                    className="w-6 h-6 md:w-8 md:h-8 text-indigo-400 mb-2 transition-colors duration-300 
+                                group-hover:text-indigo-300"
+                  />
+                  <span className="text-xs md:text-sm whitespace-nowrap font-medium text-gray-200">{skill.name}</span>
                 </motion.div>
               ))}
             </div>
@@ -241,7 +245,7 @@ export default function Home() {
 
           {/* 4. 교육 섹션에 애니메이션 적용 */}
           <AnimateOnScroll id="education">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">🎓 교육</h2>
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6">🎓 교육</h2>
             {educationData.map((item, index) => (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -252,12 +256,12 @@ export default function Home() {
                 className="p-4 rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 transition-all duration-300 hover:scale-102 space-y-2"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-base sm:text-lg text-indigo-400 font-bold">{item.course}</p>
-                  <Badge variant={'secondary'} className='text-xs bg-gray-600 text-gray-200 mt-1 sm:mt-0'>
+                  <p className="text-base md:text-lg text-indigo-400 font-semibold">{item.course}</p>
+                  <Badge variant={'secondary'} className='text-xs md:text-sm bg-gray-600 text-gray-200 mt-1 sm:mt-0'>
                     {item.period}
                   </Badge>
                 </div>
-                <ul className="list-disc pl-6 text-sm sm:text-base text-gray-400 space-y-1">
+                <ul className="list-disc pl-6 text-sm md:text-base text-gray-400 space-y-1">
                   {item.details.map((detail, dIndex) => (
                     <li key={dIndex}>{detail}</li>
                   ))}
@@ -270,7 +274,7 @@ export default function Home() {
 
           {/* 5. 대회 섹션에 애니메이션 적용 */}
           <AnimateOnScroll id="prize">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">🏆 대회</h2>
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6">🏆 대회</h2>
             {prizeData.map((item, index) => (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -281,91 +285,18 @@ export default function Home() {
                 className="p-4 rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 transition-all duration-300 hover:scale-102 space-y-2"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-base sm:text-lg text-indigo-400 font-bold">{item.name}</p>
-                  <Badge variant={'secondary'} className='text-xs bg-gray-600 text-gray-200 mt-1 sm:mt-0'>
+                  <p className="text-base md:text-lg text-indigo-400 font-semibold">{item.name}</p>
+                  <Badge variant={'secondary'} className='text-xs md:text-sm bg-gray-600 text-gray-200 mt-1 sm:mt-0'>
                     {item.date}
                   </Badge>
                 </div>
-                <ul className="list-disc pl-6 text-sm sm:text-base text-gray-400 space-y-1">
+                <ul className="list-disc pl-6 text-sm md:text-base text-gray-400 space-y-1">
                   {item.details.map((detail, dIndex) => (
                     <li key={dIndex}>{detail}</li>
                   ))}
                 </ul>
               </motion.div>
             ))}
-          </AnimateOnScroll>
-
-          <Separator className="my-8 bg-gray-700" />
-
-          {/* 6. 연락처 섹션에 애니메이션 적용 */}
-          <AnimateOnScroll id="contact">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">📞 연락처</h2>
-            <div className="grid sm:grid-cols-2 gap-4">
-              {/* 연락처 Link 요소에도 애니메이션을 적용할 수 있으나, 가독성을 위해 AnimateOnScroll 내부에 둠 */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3 }}
-              >
-                <Link href="tel:01032893377" className="flex items-center gap-3 p-4 rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 transition-all duration-300 hover:scale-104
-            hover:-rotate-2 group">
-                  <Phone className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300" />
-                  <div className="space-y-0">
-                    <span className="font-semibold text-gray-200 block">전화번호</span>
-                    <span className="text-sm text-gray-400 underline underline-offset-4">010-3289-3377</span>
-                  </div>
-                </Link>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3 }}
-              >
-                <Link href="mailto:hoxey2react@gmail.com" className="flex items-center gap-3 p-4 rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 transition-all duration-300 hover:scale-104
-            hover:-rotate-2 group">
-                  <Mail className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300" />
-                  <div className="space-y-0">
-                    <span className="font-semibold text-gray-200 block">이메일</span>
-                    <span className="text-sm text-gray-400 underline underline-offset-4">hoxey2react@gmail.com</span>
-                  </div>
-                </Link>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3 }}
-              >
-                <Link href="/blog" target='_blank' className="flex items-center gap-3 p-4 rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 transition-all duration-300 hover:scale-104
-            hover:-rotate-2 group">
-                  <Rss className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300" />
-                  <div className="space-y-0">
-                    <span className="font-semibold text-gray-200 block">블로그</span>
-                    <span className="text-sm text-gray-400 underline underline-offset-4">블로그 둘러보기</span>
-                  </div>
-                </Link>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3 }}
-              >
-                <Link
-                  href="https://github.com/hoxey2Front"
-                  target='_blank'
-                  className="flex items-center gap-3 p-4 rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 transition-all duration-300 hover:scale-104
-                            hover:-rotate-2 group">
-                  <Github className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300" />
-                  <div className="space-y-0">
-                    <span className="font-semibold text-gray-200 block">깃허브</span>
-                    <span className="text-sm text-gray-400 underline underline-offset-4">깃허브 둘러보기</span>
-                  </div>
-                </Link>
-              </motion.div>
-            </div>
           </AnimateOnScroll>
         </div>
       </div>
