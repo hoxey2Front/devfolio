@@ -6,41 +6,46 @@ import { AnimateIcon } from "@/components/animate-ui/icons/icon";
 import { Volume2 } from "@/components/animate-ui/icons/volume-2";
 import { VolumeOff } from "@/components/animate-ui/icons/volume-off";
 import { useEffect, useState, useRef } from "react";
+// Next.js의 현재 경로를 가져오기 위해 usePathname을 import 합니다.
+import { usePathname } from "next/navigation";
 
 // 타입 정의 시 interface 사용 (사용자 요청 사항 반영)
 interface HeaderProps {
   showMiniProfile: boolean;
 }
 
+import { ShinyText } from '@/components/common/ShinyText';
+
 const Header = ({ showMiniProfile }: HeaderProps) => {
+  // 현재 라우트 경로를 가져옵니다.
+  const pathname = usePathname();
+
   const [profileViewCount, setProfileViewCount] = useState<number>(0);
-  // 기본 볼륨을 0.3 (30%)로 설정
+  // volume 상태는 변경되지 않지만, TS 경고를 피하기 위해 number 타입으로 명시
   const [volume] = useState<number>(0.3);
-  // 기본적으로 음소거 상태로 시작
   const [isMuted, setIsMuted] = useState<boolean>(true);
 
-  // Audio 객체를 저장할 useRef 선언
+  // useRef 타입 정의 시 interface 및 as 지양 규칙 준수 (HTMLAudioElement | null 명시)
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // ... (Audio 관련 useEffect 및 handler는 변경 없음) ...
   // 1. Audio 객체 초기화 (최초 로드 시)
   useEffect(() => {
-    // 오디오 객체는 한 번만 생성
-    if (!audioRef.current) {
-      // NOTE: /audio/self_introduce.mp3 파일은 프로젝트에 존재한다고 가정합니다.
+    // 클라이언트 사이드에서만 Audio 객체 생성
+    if (typeof window !== 'undefined' && !audioRef.current) {
       audioRef.current = new Audio('/audio/self_introduce.mp3');
       audioRef.current.loop = false;
-      // 초기 muted 상태를 isMuted 상태 (true)에 동기화
       audioRef.current.muted = isMuted;
       audioRef.current.volume = volume;
     }
-
-    // 클린업 함수: 컴포넌트 언마운트 시 오디오 정지
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
       }
     };
-  }, []); // 빈 배열: 컴포넌트 마운트 시 한 번만 실행
+    // isMuted와 volume은 초기화 시점에만 필요하므로 의존성 배열에서 제거하거나,
+    // 필요하다면 추가할 수 있으나, 여기서는 초기화 목적으로 빈 배열 유지.
+  }, []);
 
   // 2. Audio 객체의 muted 속성을 isMuted 상태에 동기화
   useEffect(() => {
@@ -55,25 +60,24 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
       if (showMiniProfile) {
         setProfileViewCount(prev => prev + 1);
 
-        // isMuted가 false일 때만 재생 시도 (사용자가 명시적으로 켰다고 가정)
         if (!isMuted) {
           audioRef.current.currentTime = 0;
+          // .play()는 Promise를 반환합니다.
           audioRef.current.play().catch(error => {
-            // 브라우저 정책(NotAllowedError)으로 인해 자동 재생이 실패할 수 있음
+            // 'AbortError'는 사용자의 상호작용 없이 자동 재생이 차단될 때 발생할 수 있습니다.
             if (error.name !== 'AbortError') {
               console.warn("Audio play attempt failed on showMiniProfile change:", error.name);
             }
           });
         }
       } else {
-        // showMiniProfile이 false일 때 (오디오 정지)
         if (!audioRef.current.paused) {
           audioRef.current.pause();
-          audioRef.current.currentTime = 0; // 재생 위치 초기화
+          audioRef.current.currentTime = 0;
         }
       }
     }
-  }, [showMiniProfile, isMuted]);
+  }, [showMiniProfile, isMuted]); // isMuted를 추가하여 오디오 재생 결정 시 최신 상태를 참조하도록 함
 
   // 4. 아이콘 클릭 시 오디오 **토글** 및 **재생/일시정지** 핸들러
   const handleIconClick = () => {
@@ -81,8 +85,9 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
     setIsMuted(willBeMuted);
 
     if (audioRef.current) {
+      // 🚨 원본 코드의 'f(!willBeMuted)'를 유효한 JavaScript 구문 'if (!willBeMuted)'로 수정했습니다.
       if (!willBeMuted) {
-        // 음소거 해제 시 명시적으로 재생 시도 (브라우저 정책 통과 목적)
+        // 음소거 해제 시 재생 시작
         audioRef.current.currentTime = 0;
         audioRef.current.play().catch(error => {
           if (error.name !== 'AbortError') {
@@ -90,7 +95,7 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
           }
         });
       } else {
-        // 음소거 설정 시 일시 정지
+        // 음소거 설정 시 정지
         audioRef.current.pause();
       }
     }
@@ -107,20 +112,30 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
     animateOnHover: true,
   };
 
+
+  // **경로 비교 함수**
+  const isLinkActive = (href: string) => {
+    // pathname이 정확히 일치하거나, pathname이 href로 시작하는지 확인 (중첩 라우트 고려)
+    // 예: href가 '/portfolio' 일 때, pathname이 '/portfolio' 또는 '/portfolio/detail/1' 이면 활성화
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur bg-gray-900/80 transition-colors duration-500">
-      <div className="flex w-full h-16 items-center justify-between px-4 md:px-6">
+    <header className="sticky top-0 z-40 w-full backdrop-blur transition-colors duration-500">
+      <div className="flex w-full h-24 items-center justify-between px-6 md:px-10">
 
         {/* 1. 로고 (좌측) */}
         <Link
           href="/"
-          className="text-base lg:text-lg font-bold transition-apply text-indigo-400 
-            hover:scale-110
-            hover:-rotate-2
-            hover:drop-shadow-[0_0_8px_rgba(165,180,252,0.8)]
-            hover:animate-pulse
-          "
-        >Devfolio</Link>
+          className="transition-all"
+        >
+          <ShinyText
+            text="Devfolio!"
+            className="text-lg gradient-text lg:text-xl font-bold tracking-wide"
+            initialColor="transparent"
+          />
+        </Link>
 
         {/* 2a. 프로필 섹션 (모바일-친화적 레이아웃) */}
         <div
@@ -132,7 +147,7 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
             `}
         >
           {/* 이미지 컨테이너 (모든 해상도에서 표시) */}
-          <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-full flex-shrink-0 border border-indigo-900 relative group">
+          <div className="w-9 h-9 lg:w-12 lg:h-12 rounded-full flex-shrink-0 border-1 lg:border-2 border-transparent ring-2 ring-main relative hover:ring-main/80 transition-all group">
             <Image
               src="/image/nomad_coder_happy.png"
               width={32}
@@ -142,30 +157,40 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
               className="rounded-full object-cover w-full h-full"
             />
             {/* 스피커 아이콘 (모든 해상도에서 표시) */}
-            <div className="absolute -bottom-1 -right-1 rounded-full bg-indigo-400 p-0.5">
-              <AnimateIcon
-                key={profileViewCount}
-                onClick={handleIconClick}
-                {...animateProps}
-                animateOnViewOnce={false}
-              >
-                <VolumeIcon className={'text-white h-2 w-2 lg:h-2.5 lg:w-2.5 hover:opacity-80'} fill={'currentColor'} />
-              </AnimateIcon>
-            </div>
+            <AnimateIcon
+              key={profileViewCount}
+              onClick={handleIconClick}
+              {...animateProps}
+              animateOnViewOnce={false}
+              className="absolute -bottom-2 -right-2 rounded-full bg-main 
+            group-hover:bg-main/80 transition-all cursor-pointer p-1"
+            >
+              <VolumeIcon className={'text-muted h-3 w-3 lg:h-3.5 lg:w-3.5 hover:opacity-80'} />
+            </AnimateIcon>
           </div>
 
           {/* 텍스트 (모바일에서는 숨김, sm(태블릿) 이상에서 표시) */}
-          <div className="hidden sm:block text-xs lg:text-sm font-bold text-indigo-400 whitespace-nowrap group">
-            안녕하세요! <span className="text-gray-200">Front-End 개발자</span> 장한옥입니다.
+          <div className="hidden sm:block text-xs lg:text-sm font-bold text-body ml-2 whitespace-nowrap group">
+            안녕하세요! <span className="gradient-text">Front-End 개발자</span> 장한옥입니다.
           </div>
         </div>
 
         {/* 2. 우측 그룹 (프로필 + 내비게이션) */}
         <div className="flex items-center space-x-4 md:space-x-6">
           {/* 2b. 내비게이션 링크 */}
-          <nav className="flex items-center space-x-4 md:space-x-6 text-xs lg:text-sm font-medium">
-            <Link href="/portfolio" className="transition-apply hover:opacity-70">Portfolio</Link>
-            <Link href="/blog" className="transition-apply hover:opacity-70">Blog</Link>
+          <nav className="flex items-center space-x-4 md:space-x-6 text-xs lg:text-sm font-semibold">
+            <Link
+              href="/portfolio"
+              className={`transition-all hover:text-sub ${isLinkActive('/portfolio') ? 'text-main' : 'text-body'}`}
+            >
+              Portfolio
+            </Link>
+            <Link
+              href="/blog"
+              className={`transition-all hover:text-sub ${isLinkActive('/blog') ? 'text-main' : 'text-body'}`}
+            >
+              Blog
+            </Link>
           </nav>
         </div>
       </div>

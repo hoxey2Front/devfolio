@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import './globals.css';
+import '@/styles/globals.css';
 import { Providers } from './providers';
 import Footer from '@/components/layout/Footer';
-// useInView를 Layout에서 제거
 
 // HeaderManager 임포트
 import HeaderManager from '@/components/layout/HeaderManager';
+import { Toaster } from '@/components/ui/sonner';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="ko" className="h-full" suppressHydrationWarning>
-      <body className={`${inter.className} h-full w-full bg-gray-900 text-gray-200`} suppressHydrationWarning>
+      <body className={`${inter.className} h-full w-full`} suppressHydrationWarning>
         <Providers>
           <div className="min-h-screen flex flex-col w-full">
 
@@ -36,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {children}
             </main>
             <Footer />
+            <Toaster />
           </div>
         </Providers>
       </body>
