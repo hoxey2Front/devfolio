@@ -1,70 +1,61 @@
 'use client';
 
-import { usePosts } from '@/hooks/usePosts';
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import Link from 'next/link';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+import { BlogLayout } from '@/app/blog/_components/BlogLayout';
+import { BlogPostCard } from '@/app/blog/_components/BlogPostCard';
+// 🎯 추가: 태그 캐러셀 컴포넌트 임포트
+import { BlogTagCarousel } from '@/app/blog/_components/BlogTagCarousel';
+import { Post } from '@/types/post';
+// 🎯 추가: useSearchParams 임포트 (태그 필터링을 위해)
+import { useSearchParams } from 'next/navigation';
+import { EmptyState } from '@/components/common/EmptyState';
+import { FileX } from 'lucide-react';
 
 export default function BlogPage() {
-  const { data: posts, isLoading, isError } = usePosts();
-
-  if (isLoading) {
-    return (
-      <div className="w-full px-4">
-        <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">Blog</h1>
-        <p className="text-lg text-muted-foreground mt-2 mb-8">
-          제가 작성한 블로그 포스트들을 소개합니다.
-        </p>
-        <Separator className="mb-8" />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, idx) => (
-            <div key={idx} className="hover:shadow-lg transition-shadow">
-              <div className="p-6 border rounded-lg">
-                <Skeleton className="h-6 w-2/3 mb-3" />
-                <Skeleton className="h-4 w-full mb-2" />
-                <Skeleton className="h-4 w-5/6 mb-2" />
-                <Skeleton className="h-4 w-1/2 mt-4" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (isError || !posts) {
-    return <div className="text-center py-10 text-red-500">프로젝트 목록을 가져오는 데 문제가 발생했습니다.</div>;
-  }
+  // 🎯 추가: 쿼리 파라미터에서 선택된 태그를 가져옵니다.
+  const searchParams = useSearchParams();
+  const selectedTag = searchParams.get('tag')?.toLowerCase() || null;
 
   return (
-    <div className="w-full px-4">
-      <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">Blog</h1>
-      <p className="text-lg text-muted-foreground mt-2 mb-8">
-        제가 작성한 블로그 포스트들을 소개합니다.
-      </p>
-      <Separator className="mb-8" />
+    <BlogLayout>
+      {/* 🎯 showTags를 추가로 받습니다. */}
+      {({ posts, viewMode, showTags }) => {
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {posts.map((post) => (
-          <Link href={`/portfolio/${post.id}`} key={post.id}>
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                {/* TODO: 썸네일 이미지는 추후 추가 */}
-                <CardTitle>{post.title}</CardTitle>
-                <CardDescription>{post.summary}</CardDescription>
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {post.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary">{tag}</Badge>
-                  ))}
-                </div>
-              </CardHeader>
-            </Card>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
+        // 🎯 태그 필터링 로직: 선택된 태그에 따라 포스트를 필터링합니다.
+        // 현재는 /blog/tags 경로에서만 필터링을 처리했지만, 이제 /blog 경로에서도 처리합니다.
+        const filteredPosts = selectedTag
+          ? posts.filter((post) =>
+            post.tags.map((t) => t.toLowerCase()).includes(selectedTag)
+          )
+          : posts; // 태그가 선택되지 않았다면 BlogLayout의 posts (전체 포스트)를 사용합니다.
+
+        // BlogLayout으로부터 받은 viewMode를 사용하여 레이아웃 클래스를 결정합니다.
+        const gridClasses = viewMode === 'list'
+          ? 'grid-cols-1'
+          : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3';
+
+        return (
+          <>
+            {/* 🎯 showTags가 true일 때만 태그 캐러셀을 렌더링합니다. */}
+            {showTags && (
+              <BlogTagCarousel posts={posts} selectedTag={selectedTag} />
+            )}
+
+            <div className={`grid ${gridClasses} gap-8 md:gap-6 lg:gap-4 transition-all duration-300 ease-in-out`}>
+              {filteredPosts.map((post: Post) => (
+                // 필터링된 포스트 목록을 렌더링합니다.
+                <BlogPostCard key={post.id} post={post} shadowEffect />
+              ))}
+            </div>
+
+            {filteredPosts.length === 0 && (
+              <EmptyState
+                message={selectedTag ? `'${selectedTag}' 태그를 가진 포스트가 없습니다.` : '포스트가 없습니다.'}
+                icon={FileX}
+              />
+            )}
+          </>
+        );
+      }}
+    </BlogLayout>
+  )
 }
