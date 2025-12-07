@@ -1,13 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
-import { Project } from '@/interfaces/project';
+import { Project } from '@/types/project';
+import { supabase } from '@/lib/supabase';
+import { mapProjectFromSupabase } from '@/lib/mapper';
 
 // API 호출 함수
 const fetchProjects = async (): Promise<Project[]> => {
-  const res = await fetch('/api/projects');
-  if (!res.ok) {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching projects:', error);
     throw new Error('프로젝트 데이터를 가져오는 데 실패했습니다.');
   }
-  return res.json();
+
+  return data.map(mapProjectFromSupabase);
 };
 
 // TanStack Query Hook
