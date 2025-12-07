@@ -9,11 +9,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "text-white bg-indigo-600 rounded-lg hover:bg-indigo-700",
+        default: "text-background bg-main rounded-lg hover:bg-sub",
+        gradient: "text-background rounded-lg gradient-bg hover:animate-pulse",
         destructive:
           "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
-          "text-indigo-400 border border-indigo-400 rounded-lg hover:bg-indigo-700 hover:text-white",
+          "text-sub border border-sub rounded-lg hover:border-main hover:bg-main hover:text-background px-2",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost:
@@ -21,12 +22,12 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "min-h-9 has-[>svg]:px-3",
-        sm: "min-h-8 rounded-md gap-1.5 has-[>svg]:px-2.5",
-        lg: "min-h-10 rounded-md has-[>svg]:px-4",
-        icon: "size-9",
-        "icon-sm": "size-8",
-        "icon-lg": "size-10",
+        default: "min-h-12 has-[>svg]:px-4",
+        sm: "min-h-10 px-2 rounded-md gap-1.5 has-[>svg]:px-3",
+        lg: "min-h-14 px-4 rounded-md has-[>svg]:px-5",
+        icon: "size-12",
+        "icon-sm": "size-10",
+        "icon-lg": "size-14",
       },
     },
     defaultVariants: {
