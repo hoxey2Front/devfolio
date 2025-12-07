@@ -1,0 +1,11 @@
+/* Slash Command Styles */
+.tippy-box[data-theme~='dark'] {
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+.tippy-content {
+  padding: 0;
+}
