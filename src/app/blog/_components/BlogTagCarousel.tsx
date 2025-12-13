@@ -2,9 +2,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Post } from './BlogPostCard'; // Post 타입 임포트
+import { Post } from '@/types/post'; // Post 타입 임포트
 
 // 사용자 요청에 따라 interface로 타입을 선언합니다.
 export interface TagInfo {
@@ -17,7 +15,7 @@ export interface BlogTagCarouselProps {
   selectedTag: string | null; // 현재 선택된 태그 (useSearchParams에서 가져온 값)
 }
 
-// ---------------------- 1. 태그 추출 및 정렬 로직 (tagpage.tsx에서 이동) ----------------------
+// ---------------------- 1. 태그 추출 및 정렬 로직 ----------------------
 const getTagList = (posts: Post[]): TagInfo[] => {
   const tagCountMap = new Map<string, number>();
 
@@ -43,18 +41,11 @@ const getTagList = (posts: Post[]): TagInfo[] => {
 export function BlogTagCarousel({ posts, selectedTag }: BlogTagCarouselProps) {
   const allTags = getTagList(posts);
 
-  // 캐러셀 스크롤 핸들링 (tagpage.tsx에서 이동)
-  const scrollRef = React.useRef<HTMLDivElement | null>(null);
-  const [canScrollLeft, setCanScrollLeft] = React.useState(false);
-  const [canScrollRight, setCanScrollRight] = React.useState(false);
+  // 선택된 태그가 있을 경우 소문자로 변환하여 비교에 사용합니다. (이전 답변에서 수정된 로직)
+  const normalizedSelectedTag = selectedTag ? selectedTag.toLowerCase() : null;
 
-  const updateScrollState = React.useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    setCanScrollLeft(el.scrollLeft > 0);
-    setCanScrollRight(el.scrollLeft < maxScroll);
-  }, []);
+  // 캐러셀 스크롤 핸들링
+  const scrollRef = React.useRef<HTMLDivElement | null>(null);
 
   const scrollByAmount = (amount: number) => {
     const el = scrollRef.current;
@@ -65,25 +56,11 @@ export function BlogTagCarousel({ posts, selectedTag }: BlogTagCarouselProps) {
   React.useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    updateScrollState();
-
-    const onScroll = () => updateScrollState();
-    el.addEventListener('scroll', onScroll, { passive: true });
-
-    // 리사이즈 시에도 상태 갱신
-    const onResize = () => updateScrollState();
-    window.addEventListener('resize', onResize);
 
     return () => {
-      el.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onResize);
     };
-  }, [updateScrollState]);
+  }, []);
 
-  // selectedTag가 변경될 때마다 캐러셀 상태를 갱신합니다.
-  React.useEffect(() => {
-    updateScrollState();
-  }, [selectedTag, updateScrollState]);
 
 
   return (
@@ -105,14 +82,11 @@ export function BlogTagCarousel({ posts, selectedTag }: BlogTagCarouselProps) {
           if (e.key === 'ArrowLeft') scrollByAmount(-240);
         }}
       >
-        {/* '전체' 링크 - Link의 href는 상위 컴포넌트에서 처리할 수 있도록 props로 받을 수도 있지만, 
-           현재는 `BlogTagsPage`에서만 사용되므로 경로를 그대로 유지합니다. 
-           하지만 리팩토링 목표가 `BlogPage`에서 토글하는 것이므로, 
-           `selectedTag`를 `null`로 만드는 경로를 사용합니다. */}
+        {/* '전체' 링크 */}
         <Link
           href="/blog/tags"
         >
-          <Badge className={`flex-shrink-0 snap-start text-sm py-1.5 px-3 cursor-pointer transition-colors ${selectedTag === null
+          <Badge className={`flex-shrink-0 snap-start text-sm py-1.5 px-3 cursor-pointer transition-colors ${normalizedSelectedTag === null
             ? 'text-foreground bg-main hover:bg-main/80'
             : 'text-body bg-muted hover:bg-muted/80'
             }`}>전체 ({allTags.length})</Badge>
@@ -121,7 +95,7 @@ export function BlogTagCarousel({ posts, selectedTag }: BlogTagCarouselProps) {
         {allTags.map(({ tag, count }) => (
           <Link key={tag} href={`/blog/tags?tag=${tag}`} className="flex-shrink-0 snap-start">
             <Badge
-              className={`text-sm py-1.5 px-3 cursor-pointer transition-colors ${selectedTag === tag
+              className={`text-sm py-1.5 px-3 cursor-pointer transition-colors ${normalizedSelectedTag === tag
                 ? 'text-foreground bg-main hover:bg-main/80'
                 : 'text-body bg-muted hover:bg-muted/80'
                 }`}

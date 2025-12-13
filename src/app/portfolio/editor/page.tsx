@@ -1,14 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { X, Save, ArrowLeft } from 'lucide-react';
+import { X, Save } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -16,7 +17,7 @@ import { mapProjectFromSupabase } from '@/lib/mapper';
 import { Project } from '@/types/project';
 import GradientHeadline from '@/components/common/GradientHeadline';
 
-type ProjectFormFields = {
+interface ProjectFormFields {
   title: string;
   summary: string;
   techStacks: string;
@@ -26,7 +27,7 @@ type ProjectFormFields = {
   description: string;
   startDate: string;
   endDate: string;
-};
+}
 
 export default function PortfolioEditorPage() {
   const router = useRouter();
@@ -54,7 +55,6 @@ export default function PortfolioEditorPage() {
     },
   });
 
-  // ... (핸들러 함수들은 동일하게 유지)
   const handleAddTech = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.nativeEvent.isComposing) return;
     if (e.key === 'Enter') {
@@ -110,11 +110,33 @@ export default function PortfolioEditorPage() {
 
       toast.success('프로젝트가 추가되었습니다!');
       router.push('/portfolio');
-    } catch (error: any) {
+    } catch (error) { // error 타입을 unknown으로 변경
       console.error('프로젝트 추가 실패:', error);
-      toast.error(error.message || '프로젝트 추가에 실패했습니다.');
+
+      // 타입 가드를 사용하여 error 메시지를 안전하게 추출
+      if (error && typeof error === 'object' && 'message' in error) {
+        toast.error((error as { message: string }).message || '프로젝트 추가에 실패했습니다.');
+      } else {
+        toast.error('프로젝트 추가에 실패했습니다.');
+      }
     }
   };
+
+  const thumbnailUrl = watch('thumbnailUrl');
+  const deployLink = watch('deployLink');
+
+  let previewUrl = thumbnailUrl;
+  if (!previewUrl && deployLink) {
+    // 자동 생성 URL (WordPress mshots)
+    previewUrl = `https://s0.wp.com/mshots/v1/${encodeURIComponent(deployLink)}?w=800`;
+  }
+
+  const [imageLoadError, setImageLoadError] = useState(false);
+  React.useEffect(() => {
+    // URL이 변경될 때마다 로드 에러 상태를 초기화
+    setImageLoadError(false);
+  }, [previewUrl]);
+
 
   return (
     <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
@@ -149,7 +171,7 @@ export default function PortfolioEditorPage() {
                       control={control}
                       rules={{ required: '제목을 입력해주세요.' }}
                       render={({ field }) => (
-                        <Input {...field} placeholder="프로젝트 제목을 입력하세요" className="text-lg" />
+                        <Input {...field} placeholder="프로젝트 제목을 입력하세요" />
                       )}
                     />
                     {errors.title && <p className="text-destructive text-sm mt-1">{errors.title.message}</p>}
@@ -291,37 +313,26 @@ export default function PortfolioEditorPage() {
                           placeholder="이미지 URL을 입력하세요 (비워두면 배포 URL로 자동 생성)"
                           onChange={(e) => {
                             field.onChange(e);
-                            // 수동 입력 시 자동 생성 모드 해제 로직이 필요하다면 추가
                           }}
                         />
                       )}
                     />
                     {/* Preview */}
                     <div className="aspect-video rounded-md bg-muted flex items-center justify-center overflow-hidden border border-border/50 relative group">
-                      {(() => {
-                        const thumbUrl = watch('thumbnailUrl');
-                        const deployUrl = watch('deployLink');
-
-                        let previewUrl = thumbUrl;
-                        if (!previewUrl && deployUrl) {
-                          previewUrl = `https://s0.wp.com/mshots/v1/${encodeURIComponent(deployUrl)}?w=800`;
-                        }
-
-                        if (previewUrl) {
-                          return (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={previewUrl}
-                              alt="Thumbnail Preview"
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=No+Image';
-                              }}
-                            />
-                          );
-                        }
-                        return <span className="text-muted-foreground text-sm">이미지 미리보기</span>;
-                      })()}
+                      {previewUrl && !imageLoadError ? (
+                        <Image
+                          src={previewUrl}
+                          alt="Thumbnail Preview"
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 1024px) 100vw, 30vw"
+                          onError={() => setImageLoadError(true)}
+                        />
+                      ) : (
+                        <span className="text-muted-foreground text-sm">
+                          {imageLoadError ? '이미지 로드 실패' : '이미지 미리보기'}
+                        </span>
+                      )}
                     </div>
                     <p className="text-xs text-muted-foreground">
                       * 썸네일 URL을 비워두면 배포 URL을 기반으로 자동 생성됩니다.

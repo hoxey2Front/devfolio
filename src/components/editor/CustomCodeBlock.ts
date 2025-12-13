@@ -7,6 +7,7 @@ const lowlight = createLowlight(all);
 
 export const CustomCodeBlock = CodeBlockLowlight.extend({
   addNodeView() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return ReactNodeViewRenderer(CodeBlockComponent as any);
   },
 }).configure({

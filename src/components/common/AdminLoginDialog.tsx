@@ -1,4 +1,5 @@
-// 💡 shadcn/ui Dialog, Input, Button 컴포넌트 import (가정)
+'use client';
+
 import {
   Dialog,
   DialogContent,
@@ -11,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
-// 💡 react-hook-form 및 zod import
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -23,13 +23,11 @@ interface LoginFormInputs {
   adminPw: string;
 }
 
-// 💡 zod 스키마 정의
 const loginSchema = z.object({
   adminId: z.string().min(1, "ID를 입력해주세요."),
   adminPw: z.string().min(1, "Password를 입력해주세요."),
 });
 
-// AdminLoginDialog 컴포넌트
 interface AdminLoginDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -39,8 +37,6 @@ interface AdminLoginDialogProps {
 const AdminLoginDialog = ({ open, onOpenChange, onLoginSuccess }: AdminLoginDialogProps) => {
   const { login } = useAdmin();
 
-  /** * ⭐️ 사용자 요청: state 관리는 react-hook-form으로 관리해주세요. 
-   */
   const {
     register,
     handleSubmit,
@@ -54,24 +50,30 @@ const AdminLoginDialog = ({ open, onOpenChange, onLoginSuccess }: AdminLoginDial
     },
   });
 
-  // 폼 제출 핸들러
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
       await login(data.adminId, data.adminPw);
 
       toast.success('관리자 모드로 진입합니다.');
-      onLoginSuccess(); // 성공 시 콜백 실행
-      onOpenChange(false); // Dialog 닫기
-      reset(); // 폼 초기화
-    } catch (error: any) {
+      onLoginSuccess();
+      onOpenChange(false);
+      reset();
+    } catch (error) {
       console.error('Login error:', error);
-      toast.error(error.message || '로그인에 실패했습니다. ID(이메일)와 비밀번호를 확인해주세요.');
+
+      let errorMessage = '로그인에 실패했습니다. ID(이메일)와 비밀번호를 확인해주세요.';
+
+      if (error && typeof error === 'object' && 'message' in error) {
+        errorMessage = (error as { message: string }).message;
+      }
+
+      toast.error(errorMessage);
+
       // 실패 시 Password 필드만 초기화
       reset({ adminId: data.adminId, adminPw: '' });
     }
   };
 
-  // Dialog가 닫힐 때 폼 초기화
   const handleOpenChange = (open: boolean) => {
     onOpenChange(open);
     if (!open) {
@@ -89,7 +91,6 @@ const AdminLoginDialog = ({ open, onOpenChange, onLoginSuccess }: AdminLoginDial
           </DialogDescription>
         </DialogHeader>
 
-        {/* 폼 제출을 DialogContent 내부에서 처리 */}
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6 pt-12">
 
           {/* ID 입력 필드 */}

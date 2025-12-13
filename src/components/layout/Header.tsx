@@ -43,9 +43,16 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
         audioRef.current.pause();
       }
     };
-    // isMuted와 volume은 초기화 시점에만 필요하므로 의존성 배열에서 제거하거나,
-    // 필요하다면 추가할 수 있으나, 여기서는 초기화 목적으로 빈 배열 유지.
-  }, []);
+    // isMuted와 volume이 변경될 때마다 Audio 객체 속성을 업데이트하도록 의존성 배열에 추가할 수도 있지만,
+    // 초기화 로직이므로 빈 배열을 유지하고 싶다면 eslint-disable을 사용하거나,
+    // 현재 로직상 isMuted와 volume이 바뀌면 다른 useEffect에서 처리하므로 여기서는 초기화만 담당합니다.
+    // 하지만 경고를 없애기 위해 의존성에 추가하고 내부 로직을 방어적으로 작성하는 것이 좋습니다.
+    // 여기서는 간단히 경고를 억제하거나 추가합니다. 
+    // 사용자 요청이 'build pass'이므로 의존성을 추가해도 동작에 문제가 없는지 확인.
+    // 이미 아래 useEffect들에서 속성 업데이트를 하고 있으므로, 여기서는 초기 생성만 담당.
+    // 의존성을 추가하면 Audio 객체가 재생성될 수 있으므로 주의.
+    // Audio 객체는 ref로 관리되므로 의존성이 바뀌어도 리렌더링 시 재실행되더라도 `!audioRef.current` 체크 때문에 중복 생성 안됨.
+  }, [isMuted, volume]);
 
   // 2. Audio 객체의 muted 속성을 isMuted 상태에 동기화
   useEffect(() => {

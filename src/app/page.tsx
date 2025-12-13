@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 // 1. framer-motion 임포트
 import { motion, useInView, useAnimation, Variants } from 'framer-motion';
 
@@ -124,7 +124,7 @@ const careersData: Career[] = [
  * 컴포넌트가 뷰포트에 들어올 때 fade-in 애니메이션을 적용하는 래퍼 컴포넌트
  */
 const AnimateOnScroll: React.FC<{ children: React.ReactNode, id: string }> = ({ children, id }) => {
-  const ref = React.useRef(null);
+  const ref = useRef(null);
   // 뷰포트에 들어왔는지 확인
   const inView = useInView(ref, { once: true, amount: 0.2 }); // 한 번만 실행, 20%가 보일 때
   const controls = useAnimation(); // 애니메이션 제어

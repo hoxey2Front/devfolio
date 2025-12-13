@@ -1,7 +1,7 @@
-import { Extension } from '@tiptap/core';
+import { Extension, Editor } from '@tiptap/core';
 import Suggestion from '@tiptap/suggestion';
 import { ReactRenderer } from '@tiptap/react';
-import tippy from 'tippy.js';
+import tippy, { Instance as TippyInstance } from 'tippy.js';
 import { CommandList } from './CommandList';
 import {
   Heading1,
@@ -11,8 +11,17 @@ import {
   ListOrdered,
   Quote,
   Code,
-  CheckSquare,
+
 } from 'lucide-react';
+
+// Define the shape of a suggestion item
+interface SuggestionItem {
+  title: string;
+  description: string;
+  searchTerms: string[];
+  icon: React.ComponentType;
+  command: (params: { editor: Editor; range: { from: number; to: number } }) => void;
+}
 
 export const SlashCommand = Extension.create({
   name: 'slashCommand',
@@ -21,7 +30,8 @@ export const SlashCommand = Extension.create({
     return {
       suggestion: {
         char: '/',
-        command: ({ editor, range, props }: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        command: ({ editor, range, props }: { editor: Editor; range: { from: number; to: number }; props: any }) => {
           props.command({ editor, range });
         },
       },
@@ -39,19 +49,14 @@ export const SlashCommand = Extension.create({
 });
 
 export const getSuggestionItems = ({ query }: { query: string }) => {
-  return [
+  const items: SuggestionItem[] = [
     {
       title: '제목 1',
       description: '섹션 제목 (대)',
       searchTerms: ['h1', 'heading1', '제목1', '큰제목'],
       icon: Heading1,
-      command: ({ editor, range }: any) => {
-        editor
-          .chain()
-          .focus()
-          .deleteRange(range)
-          .setNode('heading', { level: 1 })
-          .run();
+      command: ({ editor, range }) => {
+        editor.chain().focus().deleteRange(range).setNode('heading', { level: 1 }).run();
       },
     },
     {
@@ -59,13 +64,8 @@ export const getSuggestionItems = ({ query }: { query: string }) => {
       description: '섹션 제목 (중)',
       searchTerms: ['h2', 'heading2', '제목2', '중간제목'],
       icon: Heading2,
-      command: ({ editor, range }: any) => {
-        editor
-          .chain()
-          .focus()
-          .deleteRange(range)
-          .setNode('heading', { level: 2 })
-          .run();
+      command: ({ editor, range }) => {
+        editor.chain().focus().deleteRange(range).setNode('heading', { level: 2 }).run();
       },
     },
     {
@@ -73,13 +73,8 @@ export const getSuggestionItems = ({ query }: { query: string }) => {
       description: '섹션 제목 (소)',
       searchTerms: ['h3', 'heading3', '제목3', '소제목'],
       icon: Heading3,
-      command: ({ editor, range }: any) => {
-        editor
-          .chain()
-          .focus()
-          .deleteRange(range)
-          .setNode('heading', { level: 3 })
-          .run();
+      command: ({ editor, range }) => {
+        editor.chain().focus().deleteRange(range).setNode('heading', { level: 3 }).run();
       },
     },
     {
@@ -87,7 +82,7 @@ export const getSuggestionItems = ({ query }: { query: string }) => {
       description: '글머리 기호 목록',
       searchTerms: ['ul', 'list', '목록', '리스트'],
       icon: List,
-      command: ({ editor, range }: any) => {
+      command: ({ editor, range }) => {
         editor.chain().focus().deleteRange(range).toggleBulletList().run();
       },
     },
@@ -96,7 +91,7 @@ export const getSuggestionItems = ({ query }: { query: string }) => {
       description: '번호가 매겨진 목록',
       searchTerms: ['ol', 'ordered', '번호', '순서'],
       icon: ListOrdered,
-      command: ({ editor, range }: any) => {
+      command: ({ editor, range }) => {
         editor.chain().focus().deleteRange(range).toggleOrderedList().run();
       },
     },
@@ -105,7 +100,7 @@ export const getSuggestionItems = ({ query }: { query: string }) => {
       description: '인용구 작성',
       searchTerms: ['quote', 'blockquote', '인용'],
       icon: Quote,
-      command: ({ editor, range }: any) => {
+      command: ({ editor, range }) => {
         editor.chain().focus().deleteRange(range).toggleBlockquote().run();
       },
     },
@@ -114,40 +109,39 @@ export const getSuggestionItems = ({ query }: { query: string }) => {
       description: '코드 스니펫 작성',
       searchTerms: ['code', 'codeblock', '코드'],
       icon: Code,
-      command: ({ editor, range }: any) => {
+      command: ({ editor, range }) => {
         editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
       },
     },
-  ].filter((item) => {
-    if (typeof query === 'string' && query.length > 0) {
-      const search = query.toLowerCase();
-      return (
-        item.title.toLowerCase().includes(search) ||
-        item.description.toLowerCase().includes(search) ||
-        (item.searchTerms && item.searchTerms.some((term: string) => term.includes(search)))
-      );
-    }
-    return true;
-  });
+  ];
+
+  if (query && query.length > 0) {
+    const lower = query.toLowerCase();
+    return items.filter(
+      (item) =>
+        item.title.toLowerCase().includes(lower) ||
+        item.description.toLowerCase().includes(lower) ||
+        (item.searchTerms && item.searchTerms.some((t) => t.includes(lower)))
+    );
+  }
+  return items;
 };
 
 export const renderItems = () => {
   let component: ReactRenderer | null = null;
-  let popup: any | null = null;
+  let popup: TippyInstance[] | null = null;
 
   return {
-    onStart: (props: any) => {
+    onStart: (props: { editor: Editor; clientRect?: DOMRect }) => {
       component = new ReactRenderer(CommandList, {
         props,
         editor: props.editor,
       });
 
-      if (!props.clientRect) {
-        return;
-      }
+      if (!props.clientRect) return;
 
       popup = tippy('body', {
-        getReferenceClientRect: props.clientRect,
+        getReferenceClientRect: () => props.clientRect!,
         appendTo: () => document.body,
         content: component.element,
         showOnCreate: true,
@@ -156,30 +150,23 @@ export const renderItems = () => {
         placement: 'bottom-start',
       });
     },
-
-    onUpdate(props: any) {
+    onUpdate: (props: { clientRect?: DOMRect }) => {
       component?.updateProps(props);
-
-      if (!props.clientRect) {
-        return;
-      }
-
-      popup[0].setProps({
-        getReferenceClientRect: props.clientRect,
+      if (!props.clientRect) return;
+      popup?.[0].setProps({
+        getReferenceClientRect: () => props.clientRect!,
       });
     },
-
-    onKeyDown(props: any) {
+    onKeyDown: (props: { event: KeyboardEvent }) => {
       if (props.event.key === 'Escape') {
-        popup[0].hide();
+        popup?.[0].hide();
         return true;
       }
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return (component?.ref as any)?.onKeyDown(props);
     },
-
-    onExit() {
-      popup[0].destroy();
+    onExit: () => {
+      popup?.[0].destroy();
       component?.destroy();
     },
   };

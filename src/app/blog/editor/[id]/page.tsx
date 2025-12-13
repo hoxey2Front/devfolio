@@ -1,7 +1,9 @@
+// app/blog/editor/[id]/page.tsx
 'use client';
 
 import { use, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image'; // 1. next/image import
 import { useQueryClient } from '@tanstack/react-query';
 import { Post } from '@/types/post';
 import * as React from 'react';
@@ -15,15 +17,14 @@ import { supabase } from '@/lib/supabase';
 import { mapPostFromSupabase } from '@/lib/mapper';
 import { toast } from 'sonner';
 
-// --- Types ---
-type PostFormFields = {
+interface PostFormFields {
   title: string;
   publishedAt: string;
   tags: string;
   summary: string;
   content: string;
   coverImage?: string;
-};
+}
 
 interface EditorPageProps {
   params: Promise<{
@@ -58,6 +59,7 @@ export default function BlogEditPage({ params }: EditorPageProps) {
 
   // 포스트 데이터 로드
   useEffect(() => {
+    // 캐시된 데이터를 사용합니다.
     const allPosts = queryClient.getQueryData<Post[]>(['posts']);
     const post = allPosts?.find(p => p.id === id);
 
@@ -85,6 +87,7 @@ export default function BlogEditPage({ params }: EditorPageProps) {
       if (trimmedTag && !tags.includes(trimmedTag)) {
         const newTags = [...tags, trimmedTag];
         setTags(newTags);
+        // react-hook-form의 'tags' 필드 값 업데이트
         setValue('tags', newTags.join(', '));
         setTagInput('');
       }
@@ -95,6 +98,7 @@ export default function BlogEditPage({ params }: EditorPageProps) {
   const handleRemoveTag = (tagToRemove: string) => {
     const newTags = tags.filter(tag => tag !== tagToRemove);
     setTags(newTags);
+    // react-hook-form의 'tags' 필드 값 업데이트
     setValue('tags', newTags.join(', '));
   };
 
@@ -106,8 +110,8 @@ export default function BlogEditPage({ params }: EditorPageProps) {
         summary: data.summary,
         content: data.content,
         published_at: new Date().toISOString(), // 수정 시 시간 업데이트 (선택 사항)
-        tags: tags,
-        // cover_image: data.coverImage,
+        tags: tags, // 로컬 state의 tags 배열 사용
+        cover_image: data.coverImage,
       };
 
       const { data: updatedData, error } = await supabase
@@ -121,6 +125,7 @@ export default function BlogEditPage({ params }: EditorPageProps) {
 
       // React Query 캐시 업데이트
       const allPosts = queryClient.getQueryData<Post[]>(['posts']) || [];
+      // mapPostFromSupabase는 mapPostFromSupabase(updatedData)로 호출되어야 합니다.
       const updatedPost = mapPostFromSupabase(updatedData);
 
       const updatedPosts = allPosts.map(p => p.id === id ? updatedPost : p);
@@ -134,10 +139,12 @@ export default function BlogEditPage({ params }: EditorPageProps) {
     }
   };
 
+  const coverImage = watch('coverImage');
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header with Actions */}
-      <div className="sticky top-24 z-10 backdrop-blur border-b border-border">
+      <div className="sticky top-0 z-10 backdrop-blur border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-base font-semibold text-foreground">글 수정</h1>
@@ -156,6 +163,8 @@ export default function BlogEditPage({ params }: EditorPageProps) {
               variant="gradient"
               size="sm"
               disabled={isSubmitting}
+              // 폼 전체를 감싼 form 태그에 onSubmit이 설정되어 있으므로, 
+              // 버튼에서는 onClick={handleSubmit(onSubmit)} 대신 type="submit"만 사용해도 됩니다.
               onClick={handleSubmit(onSubmit)}
             >
               {isSubmitting ? '저장 중...' : '저장하기'}
@@ -168,12 +177,15 @@ export default function BlogEditPage({ params }: EditorPageProps) {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Cover Image */}
-          {watch('coverImage') && (
+          {coverImage && (
             <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden mb-8 group">
-              <img
-                src={watch('coverImage')}
+              {/* 1. next/image로 교체 */}
+              <Image
+                src={coverImage}
                 alt="Cover"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 896px"
               />
               <button
                 type="button"
@@ -231,7 +243,8 @@ export default function BlogEditPage({ params }: EditorPageProps) {
             <Controller
               name="tags"
               control={control}
-              render={({ field }) => (
+              // 2. 미사용 변수 `field` 제거 (field 대신 별도의 로컬 state를 사용하기 때문에)
+              render={() => (
                 <Input
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}

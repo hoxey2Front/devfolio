@@ -1,4 +1,3 @@
-// components/blog/BlogSearchDialog.tsx
 import * as React from 'react';
 import {
   Dialog,
@@ -8,7 +7,8 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { BlogPostCard, Post } from './BlogPostCard';
+import { BlogPostCard } from './BlogPostCard';
+import { Post } from '@/types/post';
 
 export interface BlogSearchDialogProps {
   isSearchOpen: boolean;

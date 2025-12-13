@@ -1,10 +1,16 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+interface CommandItem {
+  title: string;
+  description: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  // additional fields can be added as needed
+}
+
 interface CommandListProps {
-  items: any[];
-  command: (item: any) => void;
+  items: CommandItem[];
+  command: (item: CommandItem) => void;
 }
 
 export const CommandList = forwardRef((props: CommandListProps, ref) => {

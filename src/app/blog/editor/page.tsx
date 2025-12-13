@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,15 +15,14 @@ import { supabase } from '@/lib/supabase';
 import { mapPostFromSupabase } from '@/lib/mapper';
 import { toast } from 'sonner';
 
-// --- Types ---
-type PostFormFields = {
+interface PostFormFields {
   title: string;
   publishedAt: string;
   tags: string;
   summary: string;
   content: string;
   coverImage?: string;
-};
+}
 
 // --- Main Component ---
 export default function BlogEditor() {
@@ -50,8 +50,6 @@ export default function BlogEditor() {
     },
   });
 
-
-
   // 태그 추가 핸들러
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.nativeEvent.isComposing) return; // IME 조합 중이면 무시
@@ -78,12 +76,12 @@ export default function BlogEditor() {
   // 자동 저장
   const [saveStatus, setSaveStatus] = React.useState<'saved' | 'saving' | 'unsaved'>('saved');
 
-  const handleSave = () => {
+  const handleSave = React.useCallback(() => {
     setSaveStatus('saving');
     const formData = watch();
     localStorage.setItem('blog-draft', JSON.stringify(formData));
     setTimeout(() => setSaveStatus('saved'), 500);
-  };
+  }, [watch]);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -94,9 +92,8 @@ export default function BlogEditor() {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [handleSave, watch]);
 
-  // 페이지 로드 시 복구
   React.useEffect(() => {
     const saved = localStorage.getItem('blog-draft');
     if (saved) {
@@ -106,24 +103,25 @@ export default function BlogEditor() {
         setValue('summary', data.summary || '');
         setValue('content', data.content || '');
         setValue('tags', data.tags || '');
+
         if (data.tags) {
           const tagsArray = data.tags.split(',').map((t: string) => t.trim()).filter((t: string) => t);
           setTags(tagsArray);
         }
       }
     }
-  }, []);
+  }, [setValue]);
 
   const onSubmit: SubmitHandler<PostFormFields> = async (data) => {
     try {
-      // 새 포스트 객체 생성 (Supabase insert용)
+
       const newPostPayload = {
         title: data.title,
         summary: data.summary,
         content: data.content,
-        published_at: new Date().toISOString(), // 현재 시간으로 발행
+        published_at: new Date().toISOString(),
         tags: tags,
-        // cover_image: data.coverImage, // DB 스키마에 추가되면 주석 해제
+        cover_image: data.coverImage,
       };
 
       const { data: insertedData, error } = await supabase
@@ -134,19 +132,15 @@ export default function BlogEditor() {
 
       if (error) throw error;
 
-      // React Query 캐시 업데이트 - 기존 캐시 데이터와 병합
       const currentCachedPosts = queryClient.getQueryData<Post[]>(['posts']) || [];
-      // 매퍼를 사용하여 Supabase 응답을 Post 타입으로 변환
       const newPost = mapPostFromSupabase(insertedData);
       const updatedCachedPosts = [newPost, ...currentCachedPosts];
       queryClient.setQueryData(['posts'], updatedCachedPosts);
 
-      // 임시 저장 데이터 삭제
       localStorage.removeItem('blog-draft');
 
       toast.success('포스트가 발행되었습니다!');
 
-      // 블로그 페이지로 이동
       router.push('/blog');
     } catch (error) {
       console.error('발행 실패:', error);
@@ -154,10 +148,12 @@ export default function BlogEditor() {
     }
   };
 
+  const coverImage = watch('coverImage');
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header with Actions */}
-      <div className="sticky top-24 z-10 backdrop-blur-xs border-b border-border">
+      <div className="sticky top-0 z-10 backdrop-blur-xs border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-base font-semibold text-foreground">새 글 작성</h1>
@@ -176,7 +172,7 @@ export default function BlogEditor() {
               className='gap-2'
               onClick={handleSubmit(onSubmit)}
             >
-              <Send className='size-5' />
+              <Send className='size-4' />
               {isSubmitting ? '발행 중...' : '발행하기'}
             </Button>
           </div>
@@ -187,12 +183,15 @@ export default function BlogEditor() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Cover Image */}
-          {watch('coverImage') && (
+          {coverImage && (
             <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden mb-8 group">
-              <img
-                src={watch('coverImage')}
+              {/* 2. next/image로 교체하여 LCP 경고 해결 */}
+              <Image
+                src={coverImage}
                 alt="Cover"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 896px"
               />
               <button
                 type="button"
@@ -250,7 +249,8 @@ export default function BlogEditor() {
             <Controller
               name="tags"
               control={control}
-              render={({ field }) => (
+              // 4. 미사용 변수 `field` 제거
+              render={() => (
                 <Input
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}

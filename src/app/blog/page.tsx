@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { BlogLayout } from '@/app/blog/_components/BlogLayout';
 import { BlogPostCard } from '@/app/blog/_components/BlogPostCard';
 // 🎯 추가: 태그 캐러셀 컴포넌트 임포트
@@ -10,7 +11,7 @@ import { useSearchParams } from 'next/navigation';
 import { EmptyState } from '@/components/common/EmptyState';
 import { FileX } from 'lucide-react';
 
-export default function BlogPage() {
+function BlogPageContent() {
   // 🎯 추가: 쿼리 파라미터에서 선택된 태그를 가져옵니다.
   const searchParams = useSearchParams();
   const selectedTag = searchParams.get('tag')?.toLowerCase() || null;
@@ -58,4 +59,12 @@ export default function BlogPage() {
       }}
     </BlogLayout>
   )
+}
+
+export default function BlogPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BlogPageContent />
+    </Suspense>
+  );
 }
