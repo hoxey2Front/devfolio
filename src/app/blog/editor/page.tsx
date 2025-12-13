@@ -32,6 +32,7 @@ export default function BlogEditor() {
 
   const queryClient = useQueryClient();
   const router = useRouter();
+  const isDraftCheckedRef = React.useRef(false);
 
   const {
     control,
@@ -95,10 +96,16 @@ export default function BlogEditor() {
   }, [handleSave, watch]);
 
   React.useEffect(() => {
+    if (isDraftCheckedRef.current) return;
+    isDraftCheckedRef.current = true;
+
     const saved = localStorage.getItem('blog-draft');
     if (saved) {
       const data = JSON.parse(saved);
-      if (confirm('저장된 임시 글이 있습니다. 복구하시겠습니까?')) {
+      // 내용이 비어있는지 확인 (제목이 있거나, 내용이 있고 빈 태그가 아닌 경우)
+      const hasContent = data.title?.trim() || (data.content?.trim() && data.content !== '<p></p>');
+
+      if (hasContent && confirm('저장된 임시 글이 있습니다. 복구하시겠습니까?')) {
         setValue('title', data.title || '');
         setValue('summary', data.summary || '');
         setValue('content', data.content || '');
