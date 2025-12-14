@@ -132,16 +132,18 @@ export const renderItems = () => {
   let popup: TippyInstance[] | null = null;
 
   return {
-    onStart: (props: { editor: Editor; clientRect?: DOMRect }) => {
+    onStart: (props: { editor: Editor; clientRect?: (() => DOMRect | null) | null }) => {
       component = new ReactRenderer(CommandList, {
         props,
         editor: props.editor,
       });
 
-      if (!props.clientRect) return;
+      if (!props.clientRect) {
+        return;
+      }
 
       popup = tippy('body', {
-        getReferenceClientRect: () => props.clientRect!,
+        getReferenceClientRect: () => props.clientRect?.() || new DOMRect(0, 0, 0, 0),
         appendTo: () => document.body,
         content: component.element,
         showOnCreate: true,
@@ -150,11 +152,15 @@ export const renderItems = () => {
         placement: 'bottom-start',
       });
     },
-    onUpdate: (props: { clientRect?: DOMRect }) => {
+    onUpdate: (props: { clientRect?: (() => DOMRect | null) | null }) => {
       component?.updateProps(props);
-      if (!props.clientRect) return;
+
+      if (!props.clientRect) {
+        return;
+      }
+
       popup?.[0].setProps({
-        getReferenceClientRect: () => props.clientRect!,
+        getReferenceClientRect: () => props.clientRect?.() || new DOMRect(0, 0, 0, 0),
       });
     },
     onKeyDown: (props: { event: KeyboardEvent }) => {
