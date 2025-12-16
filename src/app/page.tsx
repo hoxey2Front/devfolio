@@ -264,7 +264,7 @@ export default function Home() {
                   >
                     <CardContent className='flex flex-col items-center justify-center'>
                       <skill.icon
-                        className="w-6 h-6 md:w-9 md:h-9 text-sub group-hover:text-main mb-2 transition-colors"
+                        className="w-6 h-6 md:w-9 md:h-9 text-sub group-hover:text-main group-hover:animate-pulse mb-2 transition-colors"
                       />
                       <span className="text-xs md:text-sm whitespace-nowrap font-medium text-body">{skill.name}</span>
                     </CardContent>
@@ -289,7 +289,7 @@ export default function Home() {
                 <Card className="hover:scale-102">
                   <CardHeader>
                     <CardTitle className='flex justify-between'>
-                      <span className="text-foreground text-base md:text-lg group-hover:text-main transition-all font-bold">{career.company}</span>
+                      <span className="text-foreground text-base md:text-lg group-hover:text-main group-hover:animate-pulse transition-all font-bold">{career.company}</span>
                       <Badge>
                         {career.period}
                       </Badge>
@@ -323,7 +323,7 @@ export default function Home() {
                 <Card className="hover:scale-102">
                   <CardHeader>
                     <CardTitle className="flex justify-between">
-                      <span className="text-foreground text-base md:text-lg group-hover:text-main transition-all font-bold">{item.course}</span>
+                      <span className="text-foreground text-base md:text-lg group-hover:text-main group-hover:animate-pulse transition-all font-bold">{item.course}</span>
                       <Badge>
                         {item.period}
                       </Badge>
@@ -358,7 +358,7 @@ export default function Home() {
                   <Card className="hover:scale-102">
                     <CardHeader>
                       <CardTitle className="flex justify-between">
-                        <span className="text-foreground md:text-lg group-hover:text-main transition-all font-bold">{item.name}</span>
+                        <span className="text-foreground md:text-lg group-hover:text-main group-hover:animate-pulse transition-all font-bold">{item.name}</span>
                         <Badge>
                           {item.date}
                         </Badge>

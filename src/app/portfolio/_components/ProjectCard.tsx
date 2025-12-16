@@ -40,7 +40,7 @@ export function ProjectCard({ project, isRecentProject = false }: ProjectCardPro
         <div className="flex-1 flex flex-col gap-8 py-8">
           <CardHeader>
             <CardTitle className={RecentProjectTitleClasses}>
-              <span className='text-base lg:text-lg leading-8 break-words group-hover:text-main transition-all duration-300'>
+              <span className='text-base lg:text-lg leading-8 break-words group-hover:text-main group-hover:animate-pulse transition-all duration-300'>
                 {project.title}
               </span>
               <Badge className='md:mt-2'>

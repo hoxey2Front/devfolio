@@ -140,7 +140,7 @@ export default function PortfolioPage() {
     <div className="w-full max-w-7xl mx-auto px-6 pb-12">
       <div className="flex justify-between items-start mb-12">
         <div>
-          <h1 className="text-4xl font-extrabold tracking-wide lg:text-5xl gradient-text w-fit">Portfolio</h1>
+          <GradientHeadline text={"Portfolio"} />
           <p className="text-base md:text-lg lg:text-lg text-body mt-4">
             제가 참여하고 개발한 주요 프로젝트들을 소개합니다.
           </p>

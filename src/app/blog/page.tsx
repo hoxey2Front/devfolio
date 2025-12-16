@@ -22,7 +22,7 @@ function BlogPageContent() {
       {({ posts, viewMode, showTags }) => {
 
         // 🎯 태그 필터링 로직: 선택된 태그에 따라 포스트를 필터링합니다.
-        // 현재는 /blog/tags 경로에서만 필터링을 처리했지만, 이제 /blog 경로에서도 처리합니다.
+
         const filteredPosts = selectedTag
           ? posts.filter((post) =>
             post.tags.map((t) => t.toLowerCase()).includes(selectedTag)

@@ -15,9 +15,6 @@ export interface BlogPostCardProps {
 }
 
 export function BlogPostCard({ post, isSearchResult = false, shadowEffect }: BlogPostCardProps) {
-  const contentClasses = isSearchResult
-    ? ''
-    : 'line-clamp-5 max-h-0 overflow-hidden group-hover:max-h-96 transition-all ease-in-out';
 
   const cardClasses = isSearchResult
     ? 'shadow-none hover:shadow-none hover:scale-100'
@@ -36,7 +33,7 @@ export function BlogPostCard({ post, isSearchResult = false, shadowEffect }: Blo
         <Card className={cardClasses} shadowEffect={shadowEffect}>
           <CardHeader>
             <CardTitle className='flex justify-between'>
-              <span className='text-base text-foreground lg:text-lg leading-8 break-words group-hover:text-main transition-colors duration-300'>
+              <span className='text-base text-foreground lg:text-lg leading-8 break-words group-hover:text-main group-hover:animate-pulse transition-colors duration-300'>
                 {post.title}
               </span>
               <TimelinBadge createdAt={post.publishedAt} strict={false} />
@@ -48,16 +45,11 @@ export function BlogPostCard({ post, isSearchResult = false, shadowEffect }: Blo
           <CardContent>
             <div className="flex flex-wrap gap-2 mb-4">
               {post.tags?.map((tag) => (
-                <Badge key={tag} variant="primary" className="text-xs">
+                <Badge key={tag} variant="outline" className="text-xs">
                   {tag}
                 </Badge>
               ))}
             </div>
-            {!isSearchResult && (
-              <div className={`${contentClasses}`}>
-                {plainTextContent}
-              </div>
-            )}
           </CardContent>
         </Card>
       </motion.div>
