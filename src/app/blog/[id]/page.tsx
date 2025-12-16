@@ -127,6 +127,11 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
           <article className="flex-1 min-w-0">
             {/* Post Header */}
             <header className="mb-10">
+
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-main mb-6 leading-tight tracking-tight">
+                {post.title}
+              </h1>
+
               <div className="flex justify-between items-center gap-3 mb-6">
                 <TimelinBadge createdAt={post.publishedAt} strict={true} />
                 <div className="flex flex-wrap gap-2">
@@ -137,10 +142,6 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                   ))}
                 </div>
               </div>
-
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-main mb-6 leading-tight tracking-tight">
-                {post.title}
-              </h1>
 
               <p className="text-sm sm:text-base text-muted-foreground border-l-4 border-border pl-4 leading-relaxed">
                 {post.summary}
