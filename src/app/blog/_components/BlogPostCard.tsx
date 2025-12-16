@@ -48,7 +48,7 @@ export function BlogPostCard({ post, isSearchResult = false, shadowEffect }: Blo
           <CardContent>
             <div className="flex flex-wrap gap-2 mb-4">
               {post.tags?.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs">
+                <Badge key={tag} variant="primary" className="text-xs">
                   {tag}
                 </Badge>
               ))}

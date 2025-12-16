@@ -225,9 +225,9 @@ export default function Home() {
           <AnimateOnScroll id="intro">
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-6 pl-4 border-l-4 border-main">☝️ 간단소개</h2>
             <p className="leading-relaxed text-sm md:text-base text-body">
-              저는 <b className="text-sub">사용자 경험</b>과 <b className="text-sub">성능 개선</b>에 집중하며 개발을 진행하고있습니다.
+              저는 <b className="text-main">사용자 경험</b>과 <b className="text-main">성능 개선</b>에 집중하며 개발을 진행하고있습니다.
               최근 유행하는 트렌드를 공부해 프로젝트에 적용하려고 노력하고 있으며,
-              <b className="text-sub">바이브 코딩</b>을 통해 필요한 곳에 시간을 투자하는 방식으로 개발하고 있습니다.
+              <b className="text-main">바이브 코딩</b>을 통해 필요한 곳에 시간을 투자하는 방식으로 개발하고 있습니다.
               앞으로도 협업과 효율성을 기반으로 더 나은 서비스를 만드는 개발자로 성장하겠습니다.
             </p>
           </AnimateOnScroll>
@@ -238,7 +238,7 @@ export default function Home() {
           <AnimateOnScroll id="iam">
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-6 pl-4 border-l-4 border-main">🙋 저는 이런 사람이에요</h2>
             <ul className="list-disc pl-5 text-sm md:text-base text-body space-y-3">
-              <li>안녕하세요! <b className="text-sub">꾸준히 성장하는 개발자</b> 장한옥입니다.</li>
+              <li>안녕하세요! <b className="text-main">꾸준히 성장하는 개발자</b> 장한옥입니다.</li>
               <li>새로운 기술에 거부감이 없고 적극성을 갖고 참여합니다.</li>
               <li>단 한 줄의 코드라도 서비스의 가치를 담으려고 노력합니다.</li>
               <li>한 번 맡은 일은 끝까지 완수하기 위해 개인시간을 사용하는걸 마다하지 않습니다.</li>
@@ -264,7 +264,7 @@ export default function Home() {
                   >
                     <CardContent className='flex flex-col items-center justify-center'>
                       <skill.icon
-                        className="w-6 h-6 md:w-9 md:h-9 text-sub mb-2 transition-colors group-hover:text-main"
+                        className="w-6 h-6 md:w-9 md:h-9 text-sub group-hover:text-main mb-2 transition-colors"
                       />
                       <span className="text-xs md:text-sm whitespace-nowrap font-medium text-body">{skill.name}</span>
                     </CardContent>

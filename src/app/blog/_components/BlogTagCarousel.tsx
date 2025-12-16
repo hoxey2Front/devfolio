@@ -87,8 +87,8 @@ export function BlogTagCarousel({ posts, selectedTag }: BlogTagCarouselProps) {
           href="/blog/tags"
         >
           <Badge className={`flex-shrink-0 snap-start text-sm py-1.5 px-3 cursor-pointer transition-colors ${normalizedSelectedTag === null
-            ? 'text-foreground bg-main hover:bg-main/80'
-            : 'text-body bg-muted hover:bg-muted/80'
+            ? 'text-foreground text-main font-semibold'
+            : 'text-body bg-muted hover:text-main/60'
             }`}>전체 ({allTags.length})</Badge>
         </Link>
 
@@ -96,8 +96,8 @@ export function BlogTagCarousel({ posts, selectedTag }: BlogTagCarouselProps) {
           <Link key={tag} href={`/blog/tags?tag=${tag}`} className="flex-shrink-0 snap-start">
             <Badge
               className={`text-sm py-1.5 px-3 cursor-pointer transition-colors ${normalizedSelectedTag === tag
-                ? 'text-foreground bg-main hover:bg-main/80'
-                : 'text-body bg-muted hover:bg-muted/80'
+                ? 'text-foreground text-main font-semibold'
+                : 'text-body bg-muted hover:text-main/60'
                 }`}
             >
               {tag} ({count})
