@@ -11,11 +11,19 @@ import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { X } from 'lucide-react';
-import { TiptapEditor } from '@/components/editor/TiptapEditor';
+import { X, Sparkles, Loader2 } from 'lucide-react';
+import { TiptapEditor, TiptapEditorRef } from '@/components/editor/TiptapEditor';
 import { supabase } from '@/lib/supabase';
 import { mapPostFromSupabase } from '@/lib/mapper';
 import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 
 interface PostFormFields {
   title: string;
@@ -36,6 +44,11 @@ export default function BlogEditPage({ params }: EditorPageProps) {
   const { id } = use(params);
   const router = useRouter();
   const queryClient = useQueryClient();
+  const editorRef = React.useRef<TiptapEditorRef>(null);
+
+  const [isGenerating, setIsGenerating] = React.useState(false);
+  const [isAiDialogOpen, setIsAiDialogOpen] = React.useState(false);
+  const [aiPrompt, setAiPrompt] = React.useState('');
 
   const [tags, setTags] = React.useState<string[]>([]);
   const [tagInput, setTagInput] = React.useState('');
@@ -102,6 +115,60 @@ export default function BlogEditPage({ params }: EditorPageProps) {
     setValue('tags', newTags.join(', '));
   };
 
+  const handleGenerateAIImage = async () => {
+    if (!aiPrompt.trim()) {
+      toast.error('프롬프트를 입력해주세요.');
+      return;
+    }
+
+    setIsAiDialogOpen(false);
+    setIsGenerating(true);
+    const toastId = toast.loading('AI 이미지를 생성 중입니다...');
+
+    try {
+      const genResponse = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: aiPrompt }),
+      });
+
+      if (!genResponse.ok) throw new Error('Generation failed');
+      const { url: aiUrl } = await genResponse.json();
+
+      const imgFetch = await fetch(aiUrl);
+      const blob = await imgFetch.blob();
+      const file = new File([blob], `ai-gen-${Date.now()}.png`, { type: 'image/png' });
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const uploadResponse = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) throw new Error('Upload failed');
+      const { url: localUrl } = await uploadResponse.json();
+
+      const editor = editorRef.current?.getEditor();
+      if (editor) {
+        editor.chain().focus().setImage({ src: localUrl }).run();
+      } else {
+        const currentContent = watch('content');
+        const newContent = `${currentContent}<p><img src="${localUrl}" alt="AI Generated Image" /></p>`;
+        setValue('content', newContent);
+      }
+
+      setAiPrompt('');
+      toast.success('AI 이미지가 생성되어 삽입되었습니다!', { id: toastId });
+    } catch (error) {
+      console.error('AI Image Gen Error:', error);
+      toast.error('이미지 생성에 실패했습니다.', { id: toastId });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const onSubmit: SubmitHandler<PostFormFields> = async (data) => {
     try {
       // Supabase 업데이트용 페이로드
@@ -154,6 +221,17 @@ export default function BlogEditPage({ params }: EditorPageProps) {
               type="button"
               variant="outline"
               size="sm"
+              disabled={isGenerating || isSubmitting}
+              className='gap-2'
+              onClick={() => setIsAiDialogOpen(true)}
+            >
+              <Sparkles className="size-4 text-amber-500" />
+              AI 이미지 생성
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
               onClick={() => router.back()}
             >
               취소
@@ -162,7 +240,7 @@ export default function BlogEditPage({ params }: EditorPageProps) {
               type="submit"
               variant="gradient"
               size="sm"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isGenerating}
               // 폼 전체를 감싼 form 태그에 onSubmit이 설정되어 있으므로, 
               // 버튼에서는 onClick={handleSubmit(onSubmit)} 대신 type="submit"만 사용해도 됩니다.
               onClick={handleSubmit(onSubmit)}
@@ -299,6 +377,7 @@ export default function BlogEditPage({ params }: EditorPageProps) {
             render={({ field }) => (
               <div>
                 <TiptapEditor
+                  ref={editorRef}
                   content={field.value}
                   onChange={field.onChange}
                   placeholder="내용을 입력하세요... (슬래시 명령어 사용 가능)"
@@ -311,6 +390,44 @@ export default function BlogEditPage({ params }: EditorPageProps) {
           />
         </form>
       </div>
+
+      {/* AI Image Generation Dialog */}
+      <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>AI 이미지 생성</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Textarea
+              placeholder="생성하고 싶은 이미지에 대해 설명해주세요 (예: 우주를 유영하는 고양이, 사이버펑크 도시 야경...)"
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              className="min-h-[120px] resize-none"
+              autoFocus
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => setIsAiDialogOpen(false)}
+              disabled={isGenerating}
+            >
+              취소
+            </Button>
+            <Button
+              variant="gradient"
+              type="button"
+              onClick={handleGenerateAIImage}
+              disabled={isGenerating || !aiPrompt.trim()}
+              className="gap-2"
+            >
+              {isGenerating ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
+              이미지 생성
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
