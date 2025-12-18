@@ -175,7 +175,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-background hover:bg-destructive/90">
               삭제하기
             </AlertDialogAction>
           </AlertDialogFooter>

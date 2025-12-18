@@ -1,3 +1,4 @@
+
 import { Extension, Editor } from '@tiptap/core';
 import Suggestion from '@tiptap/suggestion';
 import { ReactRenderer } from '@tiptap/react';
@@ -11,7 +12,8 @@ import {
   ListOrdered,
   Quote,
   Code,
-
+  ImageIcon,
+  Link2,
 } from 'lucide-react';
 
 // Define the shape of a suggestion item
@@ -111,6 +113,66 @@ export const getSuggestionItems = ({ query }: { query: string }) => {
       icon: Code,
       command: ({ editor, range }) => {
         editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
+      },
+    },
+    {
+      title: '이미지',
+      description: '이미지 업로드',
+      searchTerms: ['image', 'photo', 'picture', '이미지', '사진'],
+      icon: ImageIcon,
+      command: ({ editor, range }) => {
+        editor.chain().focus().deleteRange(range).run();
+        // Trigger image upload externally
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = async () => {
+          if (input.files?.length) {
+            const file = input.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+              const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+              });
+
+              if (!response.ok) throw new Error('Upload failed');
+
+              const { url } = await response.json();
+
+              if (url) {
+                editor.chain().focus().setImage({ src: url }).run();
+              }
+            } catch (error) {
+              console.error('Error uploading image:', error);
+              alert('이미지 업로드에 실패했습니다.');
+            }
+          }
+        };
+        input.click();
+      },
+    },
+    {
+      title: '링크',
+      description: '링크 또는 이미지 삽입',
+      searchTerms: ['link', 'url', 'href', '링크', '주소'],
+      icon: Link2,
+      command: ({ editor, range }) => {
+        const url = window.prompt('URL을 입력하세요:');
+
+        if (url) {
+          const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url);
+
+          editor.chain().focus().deleteRange(range).run();
+
+          if (isImage) {
+            editor.chain().focus().setImage({ src: url }).run();
+          } else {
+            editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+          }
+        }
       },
     },
   ];

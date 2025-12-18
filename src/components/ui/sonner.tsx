@@ -32,7 +32,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius)",
-          marginTop: "60px", // 헤더 높이만큼 여백 추가
+          marginTop: "0px", // 헤더 높이만큼 여백 추가
         } as React.CSSProperties
       }
       {...props}

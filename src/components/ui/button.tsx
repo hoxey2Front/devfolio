@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default: "text-background bg-main rounded-lg hover:bg-sub",
         gradient: "text-background rounded-lg gradient-bg hover:opacity-80",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/60 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "bg-destructive text-background hover:bg-destructive/60 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
           "text-main border border-main rounded-lg hover:border-main hover:bg-main hover:text-background px-2",
         secondary:

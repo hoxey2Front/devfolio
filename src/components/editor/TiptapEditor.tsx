@@ -5,6 +5,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import Typography from '@tiptap/extension-typography';
 import Link from '@tiptap/extension-link';
+import { ResizableImage } from './ResizableImage';
 import { Button } from '@/components/ui/button';
 import { useEffect } from 'react';
 import {
@@ -17,6 +18,8 @@ import {
   ListOrdered,
   Quote,
   Code,
+  Link2,
+  ImageIcon,
 } from 'lucide-react';
 import { CustomCodeBlock } from './CustomCodeBlock';
 import { SlashCommand, getSuggestionItems, renderItems } from './slash-command';
@@ -44,6 +47,9 @@ export function TiptapEditor({ content, onChange, placeholder = '내용을 입�
       Link.configure({
         openOnClick: false,
       }),
+      ResizableImage.configure({
+        allowBase64: true,
+      }),
       SlashCommand.configure({
         suggestion: {
           items: getSuggestionItems,
@@ -59,6 +65,31 @@ export function TiptapEditor({ content, onChange, placeholder = '내용을 입�
       attributes: {
         class: 'prose prose-sm sm:prose-base max-w-none focus:outline-none min-h-[500px] px-8 py-4 text-sm',
       },
+      handleKeyDown: (view, event) => {
+        if (event.key === 'Enter') {
+          const { state } = view;
+          const { selection } = state;
+          const { $from } = selection;
+
+          // Only trigger if we are at the end of a paragraph
+          const textBefore = $from.parent.textContent;
+          const trimmedText = textBefore.trim();
+
+          const isImageUrl = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(trimmedText) &&
+            (trimmedText.startsWith('http://') || trimmedText.startsWith('https://'));
+
+          if (isImageUrl) {
+            // Replace the current block with an image
+            view.dispatch(
+              state.tr
+                .delete($from.before(), $from.after())
+                .insert($from.before(), state.schema.nodes.image.create({ src: trimmedText }))
+            );
+            return true;
+          }
+        }
+        return false;
+      },
     },
     immediatelyRender: false, // SSR Hydration Mismatch 방지
   });
@@ -69,6 +100,54 @@ export function TiptapEditor({ content, onChange, placeholder = '내용을 입�
       editor.commands.setContent(content);
     }
   }, [content, editor]);
+
+  const addImage = async () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+
+    input.onchange = async () => {
+      if (input.files?.length) {
+        const file = input.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!response.ok) throw new Error('Upload failed');
+
+          const { url } = await response.json();
+
+          if (url && editor) {
+            editor.chain().focus().setImage({ src: url }).run();
+          }
+        } catch (error) {
+          console.error('Error uploading image:', error);
+          alert('이미지 업로드에 실패했습니다.');
+        }
+      }
+    };
+
+    input.click();
+  };
+
+  const addLink = () => {
+    if (!editor) return;
+    const url = window.prompt('URL을 입력하세요:');
+    if (!url) return;
+
+    const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url);
+
+    if (isImage) {
+      editor.chain().focus().setImage({ src: url }).run();
+    } else {
+      editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    }
+  };
 
   if (!editor) {
     return null;
@@ -179,6 +258,29 @@ export function TiptapEditor({ content, onChange, placeholder = '내용을 입�
           title="코드 블록"
         >
           <Code className="size-3.5 sm:size-5" />
+        </Button>
+
+        <div className="w-px h-6 bg-border mx-1" />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={addLink}
+          className={`h-9 px-3 ${editor.isActive('link') ? 'bg-muted' : ''}`}
+          title="링크 삽입"
+        >
+          <Link2 className="size-3.5 sm:size-5" />
+        </Button>
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={addImage}
+          className="h-9 px-3"
+          title="이미지 삽입"
+        >
+          <ImageIcon className="size-3.5 sm:size-5" />
         </Button>
       </div>
 

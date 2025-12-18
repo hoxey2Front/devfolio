@@ -4,6 +4,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Typography from '@tiptap/extension-typography';
 import Link from '@tiptap/extension-link';
+import { ResizableImage } from './ResizableImage';
 import { useEffect } from 'react';
 
 import { CustomCodeBlock } from './CustomCodeBlock';
@@ -25,6 +26,9 @@ export function TiptapViewer({ content }: TiptapViewerProps) {
       Typography,
       Link.configure({
         openOnClick: true,
+      }),
+      ResizableImage.configure({
+        allowBase64: true,
       }),
     ],
     content,
