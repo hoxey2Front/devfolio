@@ -128,27 +128,18 @@ export default function BlogEditPage({ params }: EditorPageProps) {
     try {
       const genResponse = await fetch('/api/generate-image', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-msw-bypass': 'true'
+        },
         body: JSON.stringify({ prompt: aiPrompt }),
       });
 
-      if (!genResponse.ok) throw new Error('Generation failed');
-      const { url: aiUrl } = await genResponse.json();
-
-      const imgFetch = await fetch(aiUrl);
-      const blob = await imgFetch.blob();
-      const file = new File([blob], `ai-gen-${Date.now()}.png`, { type: 'image/png' });
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const uploadResponse = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!uploadResponse.ok) throw new Error('Upload failed');
-      const { url: localUrl } = await uploadResponse.json();
+      const data = await genResponse.json().catch(() => ({}));
+      if (!genResponse.ok) {
+        throw new Error(data.details || 'Generation failed');
+      }
+      const localUrl = data.url;
 
       const editor = editorRef.current?.getEditor();
       if (editor) {
@@ -161,9 +152,9 @@ export default function BlogEditPage({ params }: EditorPageProps) {
 
       setAiPrompt('');
       toast.success('AI 이미지가 생성되어 삽입되었습니다!', { id: toastId });
-    } catch (error) {
+    } catch (error: any) {
       console.error('AI Image Gen Error:', error);
-      toast.error('이미지 생성에 실패했습니다.', { id: toastId });
+      toast.error(`이미지 생성에 실패했습니다: ${error.message}`, { id: toastId });
     } finally {
       setIsGenerating(false);
     }
@@ -422,8 +413,7 @@ export default function BlogEditPage({ params }: EditorPageProps) {
               disabled={isGenerating || !aiPrompt.trim()}
               className="gap-2"
             >
-              {isGenerating ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
-              이미지 생성
+              {isGenerating ? 'AI가 실제 이미지를 생성 중...' : '이미지 생성'}
             </Button>
           </DialogFooter>
         </DialogContent>
