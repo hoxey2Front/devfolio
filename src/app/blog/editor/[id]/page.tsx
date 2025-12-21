@@ -411,9 +411,8 @@ export default function BlogEditPage({ params }: EditorPageProps) {
               type="button"
               onClick={handleGenerateAIImage}
               disabled={isGenerating || !aiPrompt.trim()}
-              className="gap-2"
             >
-              {isGenerating ? 'AI가 실제 이미지를 생성 중...' : '이미지 생성'}
+              {isGenerating ? '이미지 생성 중...' : '이미지 생성'}
             </Button>
           </DialogFooter>
         </DialogContent>

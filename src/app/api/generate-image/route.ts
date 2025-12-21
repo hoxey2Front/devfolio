@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Helper function for timeout fetch with optional retries and exponential backoff
@@ -56,7 +54,7 @@ async function fetchWithTimeout(url: string, options: any = {}, timeout = 30000,
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  console.log('[ImageGen] Starting generation process...');
+  console.log('[ImageGen] Starting generation process (Base64 Mode)...');
   
   try {
     const { prompt } = await request.json();
@@ -117,7 +115,7 @@ export async function POST(request: NextRequest) {
     
     let response;
     try {
-      // 30s timeout, increased to 3 retries for 502 resilience
+      // 30s timeout, 3 retries for 502 resilience
       response = await fetchWithTimeout(imageUrl, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -134,29 +132,15 @@ export async function POST(request: NextRequest) {
         throw new Error(`AI service returned error ${response.status}: ${errorText.substring(0, 100)}`);
     }
 
-    console.log('[ImageGen] Pollinations Fetch Success (Took ' + (Date.now() - pollStart) + 'ms). Reading buffer...');
+    console.log('[ImageGen] Pollinations Fetch Success (Took ' + (Date.now() - pollStart) + 'ms). Encoding to Base64...');
 
     const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const base64Image = Buffer.from(arrayBuffer).toString('base64');
+    const dataUrl = `data:image/png;base64,${base64Image}`;
 
-    // 3. Save locally
-    const uploadDir = join(process.cwd(), 'public', 'uploads');
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (e) {
-      console.error('[ImageGen] Error creating upload directory:', e);
-    }
-
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const filename = `ai-gen-${uniqueSuffix}.png`;
-    const filepath = join(uploadDir, filename);
-
-    await writeFile(filepath, buffer);
-
-    const localUrl = `/uploads/${filename}`;
-    console.log('[ImageGen] Total Process Success (Total ' + (Date.now() - startTime) + 'ms):', localUrl);
+    console.log('[ImageGen] Total Process Success (Total ' + (Date.now() - startTime) + 'ms). Image returned as Data URL.');
     
-    return NextResponse.json({ url: localUrl });
+    return NextResponse.json({ url: dataUrl });
 
   } catch (error: any) {
     console.error('[ImageGen] Fatal error in route:', error);
