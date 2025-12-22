@@ -51,6 +51,11 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
         Typography,
         Link.configure({
           openOnClick: false,
+          autolink: true,
+          linkOnPaste: true,
+          HTMLAttributes: {
+            class: 'text-primary underline underline-offset-4 decoration-primary/30 hover:decoration-primary transition-all cursor-pointer',
+          },
         }),
         ResizableImage.configure({
           allowBase64: true,
@@ -146,15 +151,33 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 
     const addLink = () => {
       if (!editor) return;
-      const url = window.prompt('URL을 입력하세요:');
-      if (!url) return;
+
+      const previousUrl = editor.getAttributes('link').href;
+      const url = window.prompt('URL을 입력하세요:', previousUrl);
+
+      // cancelled
+      if (url === null) return;
+
+      // empty
+      if (url === '') {
+        editor.chain().focus().extendMarkRange('link').unsetLink().run();
+        return;
+      }
 
       const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url);
 
       if (isImage) {
         editor.chain().focus().setImage({ src: url }).run();
       } else {
-        editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+        // selection이 있으면 해당 텍스트에 링크, 없으면 URL을 텍스트로 삽입
+        const { from, to } = editor.state.selection;
+        const hasSelection = from !== to;
+
+        if (hasSelection) {
+          editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+        } else {
+          editor.chain().focus().insertContent(`<a href="${url}">${url}</a>`).run();
+        }
       }
     };
 
