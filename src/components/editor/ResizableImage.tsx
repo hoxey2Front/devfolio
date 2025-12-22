@@ -58,7 +58,7 @@ const ResizableImageComponent = ({ node, updateAttributes, selected, editor, del
 
   return (
     <NodeViewWrapper
-      className={`inline-block relative leading-none group transition-all duration-200 ${editor.isEditable
+      className={`inline-block relative leading-none group transition-all duration-200 rounded-md ${editor.isEditable
         ? selected ? 'ring-[3px] ring-primary ring-offset-2 rounded-sm shadow-lg' : 'hover:ring-2 hover:ring-primary/50'
         : ''
         }`}
@@ -76,7 +76,7 @@ const ResizableImageComponent = ({ node, updateAttributes, selected, editor, del
       {/* Resize Handle - Bottom Right */}
       {editor.isEditable && (
         <div
-          className={`absolute -bottom-3 -right-3 w-7 h-7 bg-background rounded-full cursor-nwse-resize shadow-2xl border-2 border-foreground z-30 transition-all transform hover:scale-110 active:scale-95 flex items-center justify-center ${selected || resizing ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+          className={`absolute -bottom-3 -right-3 w-7 h-7 bg-background rounded-full cursor-nwse-resize shadow-2xl border-2 border-foreground z-30 transition-all transform hover:opacity-80 flex items-center justify-center ${selected || resizing ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
             }`}
           onMouseDown={onMouseDown}
         >
@@ -92,7 +92,7 @@ const ResizableImageComponent = ({ node, updateAttributes, selected, editor, del
             e.stopPropagation();
             deleteNode();
           }}
-          className={`absolute -top-3 -right-3 w-7 h-7 bg-background text-foreground rounded-full shadow-2xl border-2 border-foreground z-30 transition-all transform hover:scale-110 active:scale-95 flex items-center justify-center ${selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+          className={`absolute -top-3 -right-3 w-7 h-7 bg-background text-foreground rounded-full shadow-2xl border-2 border-foreground z-30 transition-all transform flex items-center justify-center hover:opacity-80 ${selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
             }`}
           title="이미지 삭제"
         >
