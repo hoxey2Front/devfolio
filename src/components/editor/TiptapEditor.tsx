@@ -43,6 +43,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
             levels: [1, 2, 3],
           },
           codeBlock: false, // 기본 코드 블록 비활성화
+          link: false, // StarterKit의 기본 link가 있다면 비활성화하여 중복 방지
         }),
         CustomCodeBlock, // 커스텀 코드 블록 추가
         Placeholder.configure({

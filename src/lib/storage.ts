@@ -8,13 +8,22 @@ export const BUCKET_NAME = 'blog-images';
 export async function uploadImage(file: File) {
   const fileExt = file.name.split('.').pop();
   const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-  const filePath = fileName; // 폴더 구조가 필요한 경우 `${folder}/${fileName}` 형식으로 변경 가능
+  const filePath = fileName;
 
+  console.log('Using bucket:', BUCKET_NAME);
+  
+  // Convert File to ArrayBuffer for better reliability in server environments
+  const arrayBuffer = await file.arrayBuffer();
+  
   const { error: uploadError } = await supabase.storage
     .from(BUCKET_NAME)
-    .upload(filePath, file);
+    .upload(filePath, arrayBuffer, {
+      contentType: file.type || 'image/jpeg',
+      upsert: false
+    });
 
   if (uploadError) {
+    console.error('Supabase Storage Upload Error:', uploadError);
     throw uploadError;
   }
 
