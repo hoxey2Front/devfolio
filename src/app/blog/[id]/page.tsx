@@ -7,10 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TimelinBadge } from '@/components/common/TimelinBadge';
 import { TableOfContents } from '@/components/blog/TableOfContents';
-import { mockPosts } from '@/mocks/data';
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useAdmin } from '@/contexts/AdminContext';
+import { usePost } from '@/hooks/usePost';
 import { useQueryClient } from '@tanstack/react-query';
 import { Post } from '@/types/post';
 import { supabase } from '@/lib/supabase';
@@ -39,11 +39,20 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
   const queryClient = useQueryClient();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  // 모든 포스트에서 찾기 (로컬 스토리지 + Mock)
-  const allPosts = queryClient.getQueryData<Post[]>(['posts']) || mockPosts;
-  const post = allPosts.find((p) => p.id === id);
+  const { data: post, isLoading, isError } = usePost(id);
 
-  if (!post) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <ArrowLeft className="animate-pulse size-12 text-muted-foreground" />
+          <p className="text-muted-foreground">포스트를 불러오는 중입니다...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !post) {
     notFound();
   }
 
