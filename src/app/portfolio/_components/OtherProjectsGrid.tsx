@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { ProjectCard } from './ProjectCard';
 import { Project } from '@/types/project';
+import { CoverFlow } from './CoverFlow';
 
 export interface OtherProjectsGridProps {
   projects: Project[];
@@ -8,15 +8,11 @@ export interface OtherProjectsGridProps {
 
 export function OtherProjectsGrid({ projects }: OtherProjectsGridProps) {
   return (
-    <>
-      <h2 className="text-xl md:text-2xl font-bold mb-8 pl-4 border-l-4 border-main flex items-center gap-4">
+    <div className="py-20">
+      <h2 className="text-2xl md:text-3xl font-bold mb-12 pl-4 border-l-4 border-main flex items-center gap-4 max-w-7xl mx-auto px-6">
         기타 프로젝트
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-9">
-        {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} isRecentProject={false} />
-        ))}
-      </div>
-    </>
+      <CoverFlow projects={projects} />
+    </div>
   );
 }
