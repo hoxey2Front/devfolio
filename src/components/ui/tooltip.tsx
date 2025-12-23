@@ -40,8 +40,8 @@ const tooltipVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-main text-white",
-        destructive: "bg-destructive text-destructive-foreground",
+        default: "bg-main text-background",
+        destructive: "bg-destructive text-background",
       },
     },
     defaultVariants: {
