@@ -29,7 +29,7 @@ export function CoverFlow({ projects }: CoverFlowProps) {
     <div className="relative w-full overflow-hidden px-4 md:px-12">
       <div
         ref={containerRef}
-        className="flex items-center justify-center min-h-[380px] perspective-[1000px] relative"
+        className="flex items-center justify-center min-h-[420px] perspective-[1000px] relative"
       >
         <AnimatePresence mode="popLayout">
           {projects.map((project, index) => {
