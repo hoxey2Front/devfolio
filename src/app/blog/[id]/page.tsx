@@ -137,7 +137,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
             {/* Post Header */}
             <header className="mb-10">
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-main mb-6 leading-tight tracking-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold gradient-text mb-6 leading-tight tracking-tight">
                 {post.title}
               </h1>
 
@@ -145,7 +145,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                 <TimelinBadge createdAt={post.publishedAt} strict={true} />
                 <div className="flex flex-wrap gap-2">
                   {post.tags.map((tag) => (
-                    <Badge key={tag} variant="primary" className="text-xs font-normal">
+                    <Badge key={tag} variant="outline" className="text-xs font-normal">
                       {tag}
                     </Badge>
                   ))}
