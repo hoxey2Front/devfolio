@@ -2,6 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { List, Menu, X } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from '@/components/ui/button';
 
 interface Heading {
   id: string;
@@ -16,6 +25,7 @@ interface TableOfContentsProps {
 export function TableOfContents({ content }: TableOfContentsProps) {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState<string>('');
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   useEffect(() => {
     // DOM에서 실제 헤딩 요소 찾기
@@ -26,31 +36,25 @@ export function TableOfContents({ content }: TableOfContentsProps) {
       const headingElements = editorElement.querySelectorAll('h1, h2, h3');
       const extractedHeadings: Heading[] = [];
 
-      headingElements.forEach((heading, index) => {
-        const level = parseInt(heading.tagName.charAt(1));
-        const text = heading.textContent || '';
-        const id = `heading-${index}`;
-
-        // ID가 없으면 추가
-        if (!heading.id) {
-          heading.id = id;
+      headingElements.forEach((heading) => {
+        if (heading.id) {
+          const level = parseInt(heading.tagName.charAt(1));
+          const text = heading.textContent || '';
+          extractedHeadings.push({ id: heading.id, text, level });
         }
-
-        extractedHeadings.push({ id: heading.id, text, level });
       });
 
       setHeadings(extractedHeadings);
     };
 
-    // DOM이 준비될 때까지 대기
-    const timer = setTimeout(extractHeadings, 200);
+    // DOM이 준비될 때까지 대기 (TiptapViewer의 ID 생성이 100ms 후이므로 150ms로 설정)
+    const timer = setTimeout(extractHeadings, 150);
     return () => clearTimeout(timer);
   }, [content]);
 
   useEffect(() => {
     if (headings.length === 0) return;
 
-    // Intersection Observer로 현재 보이는 헤딩 추적
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -60,8 +64,8 @@ export function TableOfContents({ content }: TableOfContentsProps) {
         });
       },
       {
-        rootMargin: '-100px 0px -80% 0px',
-        threshold: 0.5,
+        rootMargin: '-80px 0px -80% 0px',
+        threshold: 0,
       }
     );
 
@@ -72,21 +76,13 @@ export function TableOfContents({ content }: TableOfContentsProps) {
       }
     });
 
-    return () => {
-      headings.forEach(({ id }) => {
-        const element = document.getElementById(id);
-        if (element) {
-          observer.unobserve(element);
-        }
-      });
-    };
+    return () => observer.disconnect();
   }, [headings]);
 
   const handleClick = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      // 헤더 높이 고려 (sticky header가 있다면)
-      const headerOffset = 120;
+      const headerOffset = 100;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.scrollY - headerOffset;
 
@@ -94,37 +90,76 @@ export function TableOfContents({ content }: TableOfContentsProps) {
         top: offsetPosition,
         behavior: 'smooth'
       });
+
+      // 즉시 활성화 상태 업데이트 (스크롤 중에도 반영되도록)
+      setActiveId(id);
+      setIsMobileOpen(false);
     }
   };
 
-  if (headings.length === 0) {
-    return null;
-  }
+  if (headings.length === 0) return null;
+
+  const NavContent = ({ isMobile = false }: { isMobile?: boolean }) => (
+    <div className={cn("space-y-1", isMobile && "px-2")}>
+      {!isMobile && <p className="text-sm font-semibold text-foreground mb-4 pl-4 border-l-2 border-transparent">목차</p>}
+      <div className={cn("border-l border-border/40", isMobile && "border-none")}>
+        {headings.map(({ id, text, level }) => (
+          <button
+            key={id}
+            onClick={() => handleClick(id)}
+            className={cn(
+              'block w-full text-left text-sm py-1.5 transition-all outline-none rounded-md mb-1',
+              !isMobile && 'border-l-2 -ml-px',
+              activeId === id
+                ? cn(
+                  'text-primary font-medium bg-primary/5',
+                  !isMobile && 'border-primary'
+                )
+                : cn(
+                  'text-muted-foreground hover:text-foreground hover:bg-muted/30',
+                  !isMobile && 'border-transparent hover:border-border/60'
+                ),
+              level === 1 && (isMobile ? 'pl-2' : 'pl-4'),
+              level === 2 && (isMobile ? 'pl-6' : 'pl-8'),
+              level === 3 && (isMobile ? 'pl-10' : 'pl-12')
+            )}
+          >
+            {text}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
-    <nav className="hidden xl:block sticky top-32 max-h-[calc(100vh-10rem)] overflow-y-auto">
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-foreground mb-4 pl-4">목차</p>
-        <div className="border-l border-border/40">
-          {headings.map(({ id, text, level }) => (
-            <button
-              key={id}
-              onClick={() => handleClick(id)}
-              className={cn(
-                'block w-full text-left text-sm py-1.5 transition-colors border-l-2 -ml-px',
-                activeId === id
-                  ? 'border-primary text-primary font-medium'
-                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border',
-                level === 1 && 'pl-4',
-                level === 2 && 'pl-8',
-                level === 3 && 'pl-12'
-              )}
+    <>
+      {/* Desktop Sidebar */}
+      <nav className="hidden xl:block sticky top-32 max-h-[calc(100vh-10rem)] overflow-y-auto custom-scrollbar">
+        <NavContent />
+      </nav>
+
+      {/* Mobile/Tablet Floating Button & Overlay */}
+      <div className="xl:hidden">
+        <Dialog open={isMobileOpen} onOpenChange={setIsMobileOpen}>
+          <DialogTrigger asChild>
+            <Button
+              size="icon"
+              className="fixed bottom-8 right-8 size-14 rounded-full shadow-2xl z-40 bg-primary text-primary-foreground hover:scale-110 active:scale-95 transition-transform"
             >
-              {text}
-            </button>
-          ))}
-        </div>
+              <Menu className="size-6" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-h-[80vh] overflow-y-auto w-[90vw] sm:max-w-[400px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 mb-4">
+                <List className="size-5 text-primary" />
+                목차
+              </DialogTitle>
+            </DialogHeader>
+            <NavContent isMobile={true} />
+          </DialogContent>
+        </Dialog>
       </div>
-    </nav>
+    </>
   );
 }

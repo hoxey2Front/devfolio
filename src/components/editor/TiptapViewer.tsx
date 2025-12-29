@@ -58,8 +58,17 @@ export function TiptapViewer({ content }: TiptapViewerProps) {
 
       const headings = editorElement.querySelectorAll('h1, h2, h3');
       headings.forEach((heading, index) => {
-        if (!heading.id) {
-          heading.id = `heading-${index}`;
+        // 텍스트를 기반으로 한 슬러그 생성 (한글 지원 및 공백 처리)
+        const text = heading.textContent || '';
+        const slug = text
+          .toLowerCase()
+          .replace(/[^a-z0-9가-힣\s]/g, '')
+          .replace(/\s+/g, '-');
+
+        const id = slug || `heading-${index}`;
+
+        if (!heading.id || heading.id.startsWith('heading-')) {
+          heading.id = id;
         }
       });
     };

@@ -166,7 +166,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
             </div>
           </article>
 
-          {/* Table of Contents - Desktop only */}
+          {/* Table of Contents - Desktop Sidebar only */}
           <aside className="hidden xl:block w-64 shrink-0">
             <TableOfContents content={post.content} />
           </aside>
