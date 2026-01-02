@@ -38,7 +38,7 @@ export function BlogPostCard({ post, isSearchResult = false, shadowEffect }: Blo
               </span>
               <TimelinBadge createdAt={post.publishedAt} strict={false} />
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="line-clamp-3 group-hover:line-clamp-none transition-all duration-300">
               {post.summary}
             </CardDescription>
           </CardHeader>

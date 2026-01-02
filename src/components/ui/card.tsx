@@ -16,7 +16,7 @@ function Card({ shadowEffect, shadowClassName, className, ...props }: CardProps)
       <div
         data-slot="card"
         className={cn(
-          "bg-card text-card-foreground flex flex-col gap-8 rounded-xl py-8 shadow-sm transition-all duration-300",
+          "bg-background text-card-foreground flex flex-col gap-8 rounded-xl py-8 shadow dark:shadow-caption/40 transition-all duration-300",
           className
         )}
         {...props}
