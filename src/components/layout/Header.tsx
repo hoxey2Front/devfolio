@@ -15,6 +15,7 @@ interface HeaderProps {
 }
 
 import { ShinyText } from '@/components/common/ShinyText';
+import { ThemeToggle } from '@/components/common/ThemeToggle';
 
 const Header = ({ showMiniProfile }: HeaderProps) => {
   // 현재 라우트 경로를 가져옵니다.
@@ -199,6 +200,11 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
               Blog
             </Link>
           </nav>
+
+          {/* 테마 토글 버튼 추가 */}
+          <div className="flex items-center">
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </header >

@@ -53,6 +53,10 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* 
+ * 전역 변수 선언 (레이어 밖 최상위 레벨)
+ * specificity 확보를 위해 html.dark 사용
+ */
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -64,7 +68,6 @@
   --body: oklch(70.97% 0.007 274.62);
   --caption: oklch(85.83% 0.005 274.62);
 
-  /* --card: oklch(0.98 0.11 0.1); */
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -95,12 +98,12 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
-  /* 💡 Light 모드 그라데이션 색상 정의 (대비 강조) */
+  /* 💡 그라데이션 */
   --grad-a: oklch(80% 0.18 310);
   --grad-b: oklch(72.5% 0.215 293.5);
   --grad-c: oklch(65% 0.25 277);
 
-  /* Font-size 커스텀 */
+  /* Font-size */
   --text-xs: calc(1rem);
   --text-sm: calc(1.2rem);
   --text-base: calc(1.4rem);
@@ -116,52 +119,50 @@
   --text-9xl: calc(9.6rem);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: oklch(21% 0.034 264.665);
-    --foreground: oklch(1 0 0);
+html.dark {
+  --background: oklch(21% 0.034 264.665);
+  --foreground: oklch(1 0 0);
 
-    /* 텍스트 색상 */
-    --main: oklch(60% 0.23 277);
-    --sub: oklch(45.725% 0.16577 275.255);
-    --body: oklch(80% 0.007 274.62);
-    --caption: oklch(60% 0.005 274.62);
+  /* 텍스트 색상 */
+  --main: oklch(60% 0.23 277);
+  --sub: oklch(45.725% 0.16577 275.255);
+  --body: oklch(80% 0.007 274.62);
+  --caption: oklch(60% 0.005 274.62);
 
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(37.3% 0.034 259.733);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(37.3% 0.034 259.733);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
 
-    /* 💡 Dark 모드 그라데이션 색상 정의 (폴백 포함) */
-    --grad-a: oklch(58% 0.23 277);
-    --grad-b: oklch(64% 0.19 293.5);
-    --grad-c: oklch(70% 0.15 310);
-  }
+  /* 💡 Dark 모드 그라데이션 */
+  --grad-a: oklch(58% 0.23 277);
+  --grad-b: oklch(64% 0.19 293.5);
+  --grad-c: oklch(70% 0.15 310);
 }
 
 @layer base {
@@ -174,7 +175,7 @@
     font-size: 62.5%;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
 }
 
@@ -189,9 +190,7 @@
     @apply flex justify-center items-center;
   }
 
-  /*
-   * 1. Gradient Text Utility
-   */
+  /* Gradient Text Utility */
   .gradient-text {
     background-image: linear-gradient(-90deg, var(--grad-a), var(--grad-b), var(--grad-c));
     -webkit-background-clip: text;
@@ -199,41 +198,23 @@
     color: transparent;
   }
 
-  /*
-   * 2. Gradient Background Utility (New)
-   * - Use this class for a full gradient background.
-   */
   .gradient-bg {
     background-image: linear-gradient(-90deg, var(--grad-a), var(--grad-b), var(--grad-c));
   }
 
-  /*
-   * 3. Gradient Border Utility (New)
-   * - Use this class to create a gradient border using the mask-composite technique.
-   * - Border thickness is fixed at 2px here.
-   */
   .gradient-border {
-    /* 1. Set the gradient as the background, starting from the border edge */
     background-image: linear-gradient(-90deg, var(--grad-a), var(--grad-b), var(--grad-c));
     background-origin: border-box;
-
-    /* 2. Set the element's actual inner background color (to hide the gradient inside) */
     background-color: var(--background);
-
-    /* 3. Set a transparent border to establish border space */
     border: 2px solid transparent;
-
-    /* 4. Set border radius from theme */
     border-radius: var(--radius);
-
-    /* 5. Cut out the inner content area (padding-box) to reveal the background gradient underneath */
     -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor; /* Essential for cutting the hole */
+    -webkit-mask-composite: xor;
     mask-composite: exclude;
   }
 
-  /* Dark mode gradient direction adjustment for all gradient utilities */
-  @media (prefers-color-scheme: dark) {
+  /* Dark mode gradient direction adjustment */
+  html.dark {
     .gradient-text,
     .gradient-bg,
     .gradient-border {
@@ -241,33 +222,18 @@
     }
   }
 
-  /* 핵심: 왼쪽 투명(가림) → 오른쪽 검정(보임) 마스크를 오른쪽으로 이동 */
   .animate-mask-reveal {
-    -webkit-mask-image: linear-gradient(
-      to right,
-      black 0%,
-      black 50%,
-      transparent 50%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      to right,
-      black 0%,
-      black 50%,
-      transparent 50%,
-      transparent 100%
-    );
+    -webkit-mask-image: linear-gradient(to right, black 0%, black 50%, transparent 50%, transparent 100%);
+    mask-image: linear-gradient(to right, black 0%, black 50%, transparent 50%, transparent 100%);
     -webkit-mask-size: 200% 100%;
     mask-size: 200% 100%;
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
-
     animation: maskReveal 1.2s ease-out forwards;
     will-change: mask-position, opacity;
   }
 }
 
-/* 방향: 왼쪽에서 오른쪽으로 드러나는 애니메이션 */
 @keyframes maskReveal {
   0% {
     -webkit-mask-position: 100% 0%;
@@ -284,95 +250,37 @@
   }
 }
 
-/* 선택: 애니메이션 강도 프리셋 (느림/정지/더 은은) */
-@layer utilities {
-}
-
 @media print {
-  /* print-hidden 클래스 숨김은 그대로 유지 */
   .print-hidden {
     display: none !important;
   }
-
-  /* 📄 용지 크기(A4) 및 방향(Portrait) 권장 */
   @page {
-    size: A4 portrait; /* A4 크기, 세로 방향 */
-    margin: 0; /* 페이지 여백을 'None'으로 권장 */
+    size: A4 portrait;
+    margin: 0;
   }
-
-  /* 🌃 배경 그래픽 인쇄를 위해 강제 설정 (브라우저가 무시할 수 있음) */
   body {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-
-  /* 📝 본문 여백 조정 (전체 화면 사용) */
   .w-full.max-w-4xl {
     width: 100% !important;
     max-width: 100% !important;
-    padding: 0 10mm !important; /* 약간의 좌우 여백 확보 (선택 사항) */
+    padding: 0 10mm !important;
   }
 }
 
-/* Syntax Highlighting (VS Code Dark+ inspired) */
+/* Syntax Highlighting */
 pre {
   background: #1e1e1e;
   color: #d4d4d4;
   font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
 }
-
-.hljs-comment,
-.hljs-quote {
-  color: #6a9955;
-}
-
-.hljs-variable,
-.hljs-template-variable,
-.hljs-tag,
-.hljs-name,
-.hljs-selector-id,
-.hljs-selector-class,
-.hljs-regexp,
-.hljs-deletion {
-  color: #9cdcfe;
-}
-
-.hljs-number,
-.hljs-built_in,
-.hljs-builtin-name,
-.hljs-literal,
-.hljs-type,
-.hljs-params,
-.hljs-meta,
-.hljs-link {
-  color: #b5cea8;
-}
-
-.hljs-attribute {
-  color: #9cdcfe;
-}
-
-.hljs-string,
-.hljs-symbol,
-.hljs-bullet,
-.hljs-addition {
-  color: #ce9178;
-}
-
-.hljs-title,
-.hljs-section {
-  color: #dcdcaa;
-}
-
-.hljs-keyword,
-.hljs-selector-tag {
-  color: #569cd6;
-}
-
-.hljs-emphasis {
-  font-style: italic;
-}
-
-.hljs-strong {
-  font-weight: bold;
-}
+.hljs-comment, .hljs-quote { color: #6a9955; }
+.hljs-variable, .hljs-template-variable, .hljs-tag, .hljs-name, .hljs-selector-id, .hljs-selector-class, .hljs-regexp, .hljs-deletion { color: #9cdcfe; }
+.hljs-number, .hljs-built_in, .hljs-builtin-name, .hljs-literal, .hljs-type, .hljs-params, .hljs-meta, .hljs-link { color: #b5cea8; }
+.hljs-attribute { color: #9cdcfe; }
+.hljs-string, .hljs-symbol, .hljs-bullet, .hljs-addition { color: #ce9178; }
+.hljs-title, .hljs-section { color: #dcdcaa; }
+.hljs-keyword, .hljs-selector-tag { color: #569cd6; }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: bold; }

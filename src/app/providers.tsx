@@ -18,6 +18,7 @@ if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { AdminProvider } from '@/contexts/AdminContext';
+import { ThemeProvider } from 'next-themes';
 
 // 클라이언트 컴포넌트로 분리
 const queryClient = new QueryClient({
@@ -37,9 +38,11 @@ export interface ProvidersProps {
 export const Providers = ({ children }: ProvidersProps) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <AdminProvider>
-        {children}
-      </AdminProvider>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <AdminProvider>
+          {children}
+        </AdminProvider>
+      </ThemeProvider>
       {/* 개발 시 React Query Devtools를 여기에 추가할 수 있습니다 */}
     </QueryClientProvider>
   );
