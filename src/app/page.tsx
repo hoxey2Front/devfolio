@@ -177,13 +177,30 @@ export default function Home() {
             variants={profileVariants}
           >
             <div className="space-y-2 md:space-y-3 lg:space-y-4 text-center">
-              <div className="w-28 h-28 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full mx-auto overflow-hidden ring-2 md:ring-3 border-2 md:border-3 border-background ring-sub">
-                <Image
-                  src="/image/nomad_coder.png"
-                  width={500}
-                  height={500}
-                  alt="profile"
+              <div className="relative w-28 h-28 md:w-32 md:h-32 lg:w-40 lg:h-40 mx-auto">
+                {/* 핑(Ping) 효과를 위한 배경 요소 */}
+                <motion.div
+                  className="absolute inset-0 rounded-full bg-main"
+                  animate={{
+                    scale: [1, 1.1, 1],
+                    opacity: [0.3, 0.5, 0.2],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                 />
+                {/* 실제 프로필 이미지 컨테이너 */}
+                <div className="relative w-full h-full rounded-full overflow-hidden border-2 md:border-3 border-background ring-1 ring-main/50 sub z-10">
+                  <Image
+                    src="/image/nomad_coder.png"
+                    width={500}
+                    height={500}
+                    alt="profile"
+                    className="object-cover w-full h-full"
+                  />
+                </div>
               </div>
               <h1 className="text-3xl md:text-4xl font-black gradient-text tracking-wide inline">장한옥</h1>
               <div id="in-view-detector" className="h-1 bg-transparent w-full -mt-2" />
@@ -289,7 +306,7 @@ export default function Home() {
                 <Card className="hover:scale-102">
                   <CardHeader>
                     <CardTitle className='flex justify-between'>
-                      <span className="text-foreground text-base md:text-lg group-hover:text-main group-hover:animate-pulse transition-all font-bold">{career.company}</span>
+                      <span className="text-foreground text-base md:text-lg group-hover:text-main group-hover:animate-pulse transition-all font-bold line-clamp-1 group-hover:line-clamp-none">{career.company}</span>
                       <Badge>
                         {career.period}
                       </Badge>
@@ -323,7 +340,7 @@ export default function Home() {
                 <Card className="hover:scale-102">
                   <CardHeader>
                     <CardTitle className="flex justify-between">
-                      <span className="text-foreground text-base md:text-lg group-hover:text-main group-hover:animate-pulse transition-all font-bold">{item.course}</span>
+                      <span className="text-foreground text-base md:text-lg group-hover:text-main group-hover:animate-pulse transition-all font-bold line-clamp-1 group-hover:line-clamp-none">{item.course}</span>
                       <Badge>
                         {item.period}
                       </Badge>
@@ -358,7 +375,7 @@ export default function Home() {
                   <Card className="hover:scale-102">
                     <CardHeader>
                       <CardTitle className="flex justify-between">
-                        <span className="text-foreground md:text-lg group-hover:text-main group-hover:animate-pulse transition-all font-bold">{item.name}</span>
+                        <span className="text-foreground md:text-lg group-hover:text-main group-hover:animate-pulse transition-all font-bold line-clamp-1 group-hover:line-clamp-none">{item.name}</span>
                         <Badge>
                           {item.date}
                         </Badge>

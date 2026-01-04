@@ -63,7 +63,7 @@ export function BlogSearchDialog({
           </div>
         </div>
 
-        <div className="mt-6 space-y-2 max-h-150 overflow-y-auto">
+        <div className="mt-6 space-y-8">
           {filteredPosts.length === 0 ? (
             <p className="text-sm text-muted-foreground">검색 결과가 없습니다.</p>
           ) : (

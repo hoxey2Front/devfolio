@@ -8,6 +8,7 @@ import { VolumeOff } from "@/components/animate-ui/icons/volume-off";
 import { useEffect, useState, useRef } from "react";
 // Next.js의 현재 경로를 가져오기 위해 usePathname을 import 합니다.
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 
 // 타입 정의 시 interface 사용 (사용자 요청 사항 반영)
 interface HeaderProps {
@@ -155,26 +156,42 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
             `}
         >
           {/* 이미지 컨테이너 (모든 해상도에서 표시) */}
-          <div className="w-9 h-9 lg:w-12 lg:h-12 rounded-full flex-shrink-0 border-1 lg:border-2 border-transparent ring-2 ring-main relative hover:ring-main/80 transition-all group">
-            <Image
-              src="/image/nomad_coder_happy.png"
-              width={32}
-              height={32}
-              alt="Mini profile"
-              unoptimized={true}
-              className="rounded-full object-cover w-full h-full"
+          <div className="relative w-9 h-9 lg:w-12 lg:h-12 flex-shrink-0">
+            {/* 핑(Ping) 효과를 위한 배경 요소 */}
+            <motion.div
+              className="absolute inset-0 rounded-full bg-main"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.5, 0.2],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
             />
-            {/* 스피커 아이콘 (모든 해상도에서 표시) */}
-            <AnimateIcon
-              key={profileViewCount}
-              onClick={handleIconClick}
-              {...animateProps}
-              animateOnViewOnce={false}
-              className="absolute -bottom-2 -right-2 rounded-full bg-main 
-            group-hover:bg-main/80 transition-all cursor-pointer p-1"
-            >
-              <VolumeIcon className={'text-muted h-3 w-3 lg:h-3.5 lg:w-3.5 hover:opacity-80'} />
-            </AnimateIcon>
+            {/* 실제 이미지 및 아이콘 컨테이너 */}
+            <div className="relative w-full h-full rounded-full flex-shrink-0 border-1 lg:border-2 border-background ring-1 ring-main/50 relative hover:ring-main/80 transition-all group z-10 backdrop-blur">
+              <Image
+                src="/image/nomad_coder_happy.png"
+                width={32}
+                height={32}
+                alt="Mini profile"
+                unoptimized={true}
+                className="rounded-full object-cover w-full h-full"
+              />
+              {/* 스피커 아이콘 (모든 해상도에서 표시) */}
+              <AnimateIcon
+                key={profileViewCount}
+                onClick={handleIconClick}
+                {...animateProps}
+                animateOnViewOnce={false}
+                className="absolute -bottom-2 -right-2 rounded-full bg-main/70 
+              group-hover:bg-main/90 transition-all cursor-pointer p-1"
+              >
+                <VolumeIcon className={'text-muted h-3 w-3 lg:h-3.5 lg:w-3.5 hover:opacity-80'} />
+              </AnimateIcon>
+            </div>
           </div>
 
           {/* 텍스트 (모바일에서는 숨김, sm(태블릿) 이상에서 표시) */}

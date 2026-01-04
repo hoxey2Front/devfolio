@@ -108,16 +108,16 @@ export function TableOfContents({ content }: TableOfContentsProps) {
             key={id}
             onClick={() => handleClick(id)}
             className={cn(
-              'block w-full text-left text-sm py-1.5 transition-all outline-none rounded-md mb-1',
+              'block w-full text-left text-sm py-1.5 transition-all outline-none mb-1',
               !isMobile && 'border-l-2 -ml-px',
               activeId === id
                 ? cn(
                   'text-primary font-medium bg-primary/5',
-                  !isMobile && 'border-primary'
+                  !isMobile && 'border-main'
                 )
                 : cn(
                   'text-muted-foreground hover:text-foreground hover:bg-muted/30',
-                  !isMobile && 'border-transparent hover:border-border/60'
+                  !isMobile && 'border-transparent hover:border-main/50'
                 ),
               level === 1 && (isMobile ? 'pl-2' : 'pl-4'),
               level === 2 && (isMobile ? 'pl-6' : 'pl-8'),

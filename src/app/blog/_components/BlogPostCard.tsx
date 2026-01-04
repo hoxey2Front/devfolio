@@ -17,7 +17,7 @@ export interface BlogPostCardProps {
 export function BlogPostCard({ post, isSearchResult = false, shadowEffect }: BlogPostCardProps) {
 
   const cardClasses = isSearchResult
-    ? 'shadow-none hover:shadow-none hover:scale-100'
+    ? 'hover:scale-100'
     : 'shadowEffect';
 
   const plainTextContent = stripHtmlTags(post.content);
@@ -33,7 +33,7 @@ export function BlogPostCard({ post, isSearchResult = false, shadowEffect }: Blo
         <Card className={cardClasses} shadowEffect={shadowEffect}>
           <CardHeader>
             <CardTitle className='flex justify-between'>
-              <span className='text-base text-foreground lg:text-lg leading-8 break-words group-hover:text-main group-hover:animate-pulse transition-colors duration-300'>
+              <span className='text-base text-foreground lg:text-lg leading-8 line-clamp-1 group-hover:line-clamp-none group-hover:text-main group-hover:animate-pulse transition-colors duration-300'>
                 {post.title}
               </span>
               <TimelinBadge createdAt={post.publishedAt} strict={false} />

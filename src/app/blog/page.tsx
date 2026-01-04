@@ -41,7 +41,7 @@ function BlogPageContent() {
               <BlogTagCarousel posts={posts} selectedTag={selectedTag} />
             )}
 
-            <div className={`grid ${gridClasses} gap-8 md:gap-6 lg:gap-4 transition-all duration-300 ease-in-out`}>
+            <div className={`grid ${gridClasses} gap-8 transition-all duration-300 ease-in-out`}>
               {filteredPosts.map((post: Post) => (
                 // 필터링된 포스트 목록을 렌더링합니다.
                 <BlogPostCard key={post.id} post={post} shadowEffect />
