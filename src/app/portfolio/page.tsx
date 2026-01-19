@@ -26,7 +26,7 @@ export default function PortfolioPage() {
   if (isLoading) {
     // ... (existing skeleton code) ...
     const recentSkeleton = (
-      <Card shadowEffect className="h-full p-0 gap-0 overflow-hidden flex flex-col">
+      <Card className="h-full p-0 gap-0 overflow-hidden flex flex-col">
         {/* Thumbnail Skeleton */}
         <div className="w-full h-48 bg-muted/30 border-b border-border/50 animate-pulse" />
 
