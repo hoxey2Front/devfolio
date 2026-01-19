@@ -10,7 +10,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import GradientHeadline from '@/components/common/GradientHeadline';
 import ReloadButton from '@/components/common/ReloadButton';
 import { EmptyState } from '@/components/common/EmptyState';
-import { FolderOpen } from 'lucide-react';
+import { FolderOpen, Github, SquareArrowOutUpRight } from 'lucide-react';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 
 
 import { useAdmin } from '@/contexts/AdminContext';
@@ -25,20 +26,44 @@ export default function PortfolioPage() {
   if (isLoading) {
     // ... (existing skeleton code) ...
     const recentSkeleton = (
-      <div className="p-6 rounded-lg">
-        <div className='flex justify-between'>
-          <Skeleton className="h-6 w-2/4 mb-3 bg-muted" />
-          <Skeleton className="h-6 w-1/4 mb-3 bg-muted" />
+      <Card shadowEffect className="h-full p-0 gap-0 overflow-hidden flex flex-col">
+        {/* Thumbnail Skeleton */}
+        <div className="w-full h-48 bg-muted/30 border-b border-border/50 animate-pulse" />
+
+        <div className="flex-1 flex flex-col gap-8 py-8">
+          <CardHeader>
+            <div className="flex justify-between items-start gap-2">
+              <div className="space-y-2 flex-1">
+                <Skeleton className="h-6 w-3/4 bg-muted" />
+                <Skeleton className="h-6 w-1/2 bg-muted" />
+              </div>
+              <Skeleton className="h-6 w-24 bg-muted" />
+            </div>
+            <div className="flex gap-2 mt-4">
+              <Skeleton className="h-5 w-20 bg-muted" />
+              <Skeleton className="h-5 w-24 bg-muted" />
+            </div>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full bg-muted" />
+              <Skeleton className="h-4 w-5/6 bg-muted" />
+              <Skeleton className="h-4 w-4/6 bg-muted" />
+            </div>
+            <div className="flex flex-wrap gap-2 mt-4">
+              <Skeleton className="h-6 w-16 bg-muted" />
+              <Skeleton className="h-6 w-20 bg-muted" />
+              <Skeleton className="h-6 w-14 bg-muted" />
+            </div>
+          </CardContent>
+
+          <CardFooter className="flex justify-between gap-4">
+            <Skeleton className="h-10 flex-1 bg-muted" />
+            <Skeleton className="h-10 flex-1 bg-muted" />
+          </CardFooter>
         </div>
-        <Skeleton className="h-4 w-1/4 mb-2 bg-main" />
-        <Skeleton className="h-4 w-5/6 mb-2 bg-muted" />
-        <Skeleton className="h-4 w-5/6 mb-2 bg-muted" />
-        <Skeleton className="h-4 w-5/6 mb-2 bg-muted" />
-        <div className='flex justify-between mt-4'>
-          <Skeleton className="h-6 w-1/4 mb-2 bg-muted" />
-          <Skeleton className="h-6 w-1/4 mb-2 gradient-bg" />
-        </div>
-      </div>
+      </Card>
     );
 
     return (
@@ -50,11 +75,10 @@ export default function PortfolioPage() {
 
         <Separator />
 
-        {/* 최근 진행 프로젝트 섹션 스켈레톤 */}
         <div className='mb-8 pl-4 border-l-4 border-main'>
-          <Skeleton className="h-8 w-1/2  bg-muted" />
+          <Skeleton className="h-8 w-48 bg-muted" />
         </div>
-        <div className="bg-card hover:shadow-lg transition-shadow">
+        <div>
           {recentSkeleton}
         </div>
 
@@ -62,7 +86,7 @@ export default function PortfolioPage() {
 
         {/* 기타 프로젝트 섹션 스켈레톤 */}
         <div className='mb-8 pl-4 border-l-4 border-main'>
-          <Skeleton className="h-8 w-1/2  bg-muted" />
+          <Skeleton className="h-8 w-48 bg-muted" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

@@ -30,9 +30,9 @@ export function BlogLayout({ children }: BlogLayoutProps) {
   const { data: posts, isLoading, isError } = usePosts();
 
   const [viewMode, setViewMode] = useState<ViewMode['viewMode']>(
-    'grid'
+    'list'
   );
-  const toggleViewMode = () => setViewMode((prev) => (prev === 'grid' ? 'list' : 'grid'));
+  const toggleViewMode = () => setViewMode((prev) => (prev === 'list' ? 'grid' : 'list'));
 
   const [showTags, setShowTags] = useState(false);
   const toggleShowTags = () => setShowTags((prev) => !prev);
@@ -129,8 +129,8 @@ export function BlogLayout({ children }: BlogLayoutProps) {
           <Skeleton className='h-8 w-1/4 bg-muted' />
         </div>
         <Separator />
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-4 lg:gap-2">
-          {Array.from({ length: 9 }).map((_, idx) => (
+        <div className="grid grid-cols-1">
+          {Array.from({ length: 3 }).map((_, idx) => (
             <div key={idx} className="bg-card hover:shadow-lg transition-all">{skeleton}</div>
           ))}
         </div>
