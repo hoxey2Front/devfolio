@@ -63,8 +63,6 @@ function BlogPageContent() {
 
 export default function BlogPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <BlogPageContent />
-    </Suspense>
+    <BlogPageContent />
   );
 }
