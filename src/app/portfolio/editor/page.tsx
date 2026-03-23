@@ -139,7 +139,7 @@ export default function PortfolioEditorPage() {
 
 
   return (
-    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background pt-28 md:pt-36 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <GradientHeadline text="프로젝트 추가" className="text-3xl" />

@@ -63,8 +63,8 @@
   --foreground: oklch(21% 0.034 264.665);
 
   /* 텍스트 색상 */
-  --main: oklch(58.5% 0.233 277.117);
-  --sub: oklch(80.05% 0.124 278.432);
+  --main: #FEE500;
+  --sub: oklch(0.5 0 0);
   --body: oklch(70.97% 0.007 274.62);
   --caption: oklch(85.83% 0.005 274.62);
 
@@ -98,10 +98,15 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
+  /* Swiper Pagination */
+  --swiper-pagination-color: var(--main);
+  --swiper-pagination-bullet-inactive-color: var(--muted-foreground);
+
+
   /* 💡 그라데이션 */
-  --grad-a: oklch(80% 0.18 310);
-  --grad-b: oklch(72.5% 0.215 293.5);
-  --grad-c: oklch(65% 0.25 277);
+  --grad-a: #FEE500;
+  --grad-b: #FFD200;
+  --grad-c: #FFB900;
 
   /* Font-size */
   --text-xs: calc(1rem);
@@ -124,8 +129,8 @@ html.dark {
   --foreground: oklch(1 0 0);
 
   /* 텍스트 색상 */
-  --main: oklch(60% 0.23 277);
-  --sub: oklch(45.725% 0.16577 275.255);
+  --main: #FEE500;
+  --sub: oklch(0.8 0 0);
   --body: oklch(80% 0.007 274.62);
   --caption: oklch(60% 0.005 274.62);
 
@@ -160,9 +165,9 @@ html.dark {
   --sidebar-ring: oklch(0.556 0 0);
 
   /* 💡 Dark 모드 그라데이션 */
-  --grad-a: oklch(58% 0.23 277);
-  --grad-b: oklch(64% 0.19 293.5);
-  --grad-c: oklch(70% 0.15 310);
+  --grad-a: #FEE500;
+  --grad-b: #FFD200;
+  --grad-c: #FFB900;
 }
 
 @layer base {
@@ -232,6 +237,52 @@ html.dark {
     animation: maskReveal 1.2s ease-out forwards;
     will-change: mask-position, opacity;
   }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .animate-spin-slow {
+    @apply animate-spin;
+    animation-duration: 12s;
+  }
+
+  /* Premium Scrollbar */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: oklch(from var(--border) l c h / 0.3);
+    border-radius: 10px;
+    transition: background 0.2s;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--main);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes maskReveal {
@@ -283,4 +334,20 @@ pre {
 .hljs-title, .hljs-section { color: #dcdcaa; }
 .hljs-keyword, .hljs-selector-tag { color: #569cd6; }
 .hljs-emphasis { font-style: italic; }
-.hljs-strong { font-weight: bold; }
+
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ticker {
+  animation: ticker linear infinite;
+}
+
+.animate-ticker:hover {
+  animation-play-state: paused;
+}

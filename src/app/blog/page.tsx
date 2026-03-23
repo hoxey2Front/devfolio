@@ -63,6 +63,8 @@ function BlogPageContent() {
 
 export default function BlogPage() {
   return (
-    <BlogPageContent />
+    <Suspense fallback={<div className="min-h-screen"></div>}>
+      <BlogPageContent />
+    </Suspense>
   );
 }

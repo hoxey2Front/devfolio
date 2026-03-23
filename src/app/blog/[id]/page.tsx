@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TimelinBadge } from '@/components/common/TimelinBadge';
 import { TableOfContents } from '@/components/blog/TableOfContents';
-import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Loader2 } from 'lucide-react';
+import { motion } from 'motion/react';
 import Link from 'next/link';
 import { useAdmin } from '@/contexts/AdminContext';
 import { usePost } from '@/hooks/usePost';
@@ -45,8 +46,10 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <ArrowLeft className="animate-pulse size-12 text-muted-foreground" />
-          <p className="text-muted-foreground">포스트를 불러오는 중입니다...</p>
+          <Loader2 className="animate-spin size-10 md:size-12 text-main" />
+          <p className="text-base md:text-lg text-muted-foreground animate-pulse">
+            포스트를 불러오는 중입니다...
+          </p>
         </div>
       </div>
     );
@@ -91,16 +94,18 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-28 md:pt-36">
       {/* Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between py-6">
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="size-4" />
-            블로그로 돌아가기
+          <Link href="/blog" className="group">
+            <motion.div
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
+              whileHover={{ x: -4 }}
+            >
+              <ArrowLeft className="size-4 transition-transform duration-300 group-hover:-translate-x-1" />
+              <span>블로그로 돌아가기</span>
+            </motion.div>
           </Link>
 
           {/* 관리자 전용 버튼 */}
@@ -137,15 +142,15 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
             {/* Post Header */}
             <header className="mb-10">
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold gradient-text mb-6 leading-tight tracking-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground mb-6 leading-tight tracking-tight">
                 {post.title}
               </h1>
 
-              <div className="flex justify-between items-center gap-3 mb-6">
+              <div className="flex justify-between items-center gap-3 mb-8">
                 <TimelinBadge createdAt={post.publishedAt} strict={true} />
                 <div className="flex flex-wrap gap-2">
                   {post.tags.map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs font-normal">
+                    <Badge key={tag} variant="secondary" className="text-xs font-medium px-2 py-0.5 bg-main/10 text-main hover:bg-main/20 border-none">
                       {tag}
                     </Badge>
                   ))}

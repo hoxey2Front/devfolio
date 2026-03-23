@@ -40,7 +40,7 @@ export function ProjectCard({ project, isRecentProject = false }: ProjectCardPro
         <div className="flex-1 flex flex-col gap-8 py-8">
           <CardHeader>
             <CardTitle className={RecentProjectTitleClasses}>
-              <span className='text-base lg:text-lg leading-8 break-words group-hover:text-main group-hover:animate-pulse transition-all duration-300'>
+              <span className='text-base lg:text-lg leading-8 break-words group-hover:text-main transition-all duration-300'>
                 {project.title}
               </span>
               <Badge className='md:mt-2'>
@@ -57,7 +57,9 @@ export function ProjectCard({ project, isRecentProject = false }: ProjectCardPro
           </CardHeader>
           <CardContent className='text-sm leading-6 flex-1'>
 
-            <p className="mb-2">{project.summary}</p>
+            <p className="mb-2 line-clamp-2 md:line-clamp-3 group-hover:line-clamp-none whitespace-pre-wrap overflow-hidden group-hover:overflow-y-auto text-ellipsis text-body/80 transition-all duration-300">
+              {project.summary}
+            </p>
             <div className={techStackClasses}>
               {project.techStacks.map((t) => (
                 <Badge key={t}>{t}</Badge>

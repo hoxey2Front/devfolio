@@ -9,18 +9,20 @@ import { useEffect, useState, useRef } from "react";
 // Next.js의 현재 경로를 가져오기 위해 usePathname을 import 합니다.
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { useAdmin } from "@/contexts/AdminContext";
 
 // 타입 정의 시 interface 사용 (사용자 요청 사항 반영)
 interface HeaderProps {
   showMiniProfile: boolean;
 }
 
-import { ShinyText } from '@/components/common/ShinyText';
+
 import { ThemeToggle } from '@/components/common/ThemeToggle';
 
 const Header = ({ showMiniProfile }: HeaderProps) => {
   // 현재 라우트 경로를 가져옵니다.
   const pathname = usePathname();
+  const { isAdmin } = useAdmin();
 
   const [profileViewCount, setProfileViewCount] = useState<number>(0);
   // volume 상태는 변경되지 않지만, TS 경고를 피하기 위해 number 타입으로 명시
@@ -30,7 +32,11 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
   // useRef 타입 정의 시 interface 및 as 지양 규칙 준수 (HTMLAudioElement | null 명시)
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // ... (Audio 관련 useEffect 및 handler는 변경 없음) ...
+  // 헤더 노출 여부 상태
+  const [isVisible, setIsVisible] = useState(true);
+  const lastScrollY = useRef(0);
+  const touchStartY = useRef(0);
+
   // 1. Audio 객체 초기화 (최초 로드 시)
   useEffect(() => {
     // 클라이언트 사이드에서만 Audio 객체 생성
@@ -88,6 +94,72 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
     }
   }, [showMiniProfile, isMuted]); // isMuted를 추가하여 오디오 재생 결정 시 최신 상태를 참조하도록 함
 
+  // 스크롤/휠/스와이프 방향 감지 로직
+  useEffect(() => {
+    // 1. 일반적인 스크롤 감지 (블로그 등 일반 페이지용)
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      // 아래로 50px 이상 스크롤했고, 이전보다 더 내려갔다면 숨김
+      if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      lastScrollY.current = currentScrollY;
+    };
+
+    // 2. 휠 이벤트 감지 (랜딩페이지 Swiper 및 일반 페이지 겸용)
+    const handleWheel = (e: WheelEvent) => {
+      // deltaY > 0 이면 아래로 스크롤 (내림)
+      if (e.deltaY > 5) {
+        setIsVisible(false);
+      } else if (e.deltaY < -5) {
+        setIsVisible(true);
+      }
+    };
+
+    // 3. 터치 이벤트 감지 (모바일용 스와이프)
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const touchEndY = e.touches[0].clientY;
+      const deltaY = touchStartY.current - touchEndY;
+
+      if (deltaY > 10) {
+        setIsVisible(false); // 아래로 스와이프 -> 숨김
+      } else if (deltaY < -10) {
+        setIsVisible(true);  // 위로 스와이프 -> 보임
+      }
+      touchStartY.current = touchEndY;
+    };
+
+    // 4. Swiper 전용 커스텀 이벤트 감지
+    const handleSwiperScroll = (e: any) => {
+      if (e.detail?.direction === 'down') {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // capture: true를 사용하여 Swiper의 stopPropagation을 우회합니다.
+    window.addEventListener('wheel', handleWheel, { capture: true, passive: true });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { capture: true, passive: true });
+    window.addEventListener('swiperScroll', handleSwiperScroll as EventListener);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('wheel', handleWheel, { capture: true });
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove, { capture: true });
+      window.removeEventListener('swiperScroll', handleSwiperScroll as EventListener);
+    };
+  }, []);
+
   // 4. 아이콘 클릭 시 오디오 **토글** 및 **재생/일시정지** 핸들러
   const handleIconClick = () => {
     const willBeMuted = !isMuted;
@@ -131,38 +203,38 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
 
 
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur transition-colors duration-500">
-      <div className="flex w-full h-24 items-center justify-between px-6 md:px-10">
-
-        {/* 1. 로고 (좌측) */}
-        <Link
-          href="/"
-          className="transition-all"
-        >
-          <ShinyText
-            text="Devfolio!"
-            className="text-lg gradient-text lg:text-xl font-bold tracking-wide"
-            initialColor="transparent"
-          />
+    <header
+      className="fixed top-0 z-40 w-full flex flex-col transition-colors duration-300"
+    >
+      {/* 1층: 로고 및 미니 프로필 - 항상 보임 */}
+      <div className="flex w-full h-16 md:h-20 items-center justify-between px-6 md:px-10 border-b border-border/10 bg-background/80 backdrop-blur-md">
+        {/* 로고 (좌측) - 심플한 색상 효과 */}
+        <Link href="/" className="group flex items-center gap-2">
+          <span className="text-2xl lg:text-3xl font-black text-foreground group-hover:text-main transition-colors duration-300 tracking-wider">
+            Devfolio<span className="text-main">.</span>
+          </span>
         </Link>
 
-        {/* 2a. 프로필 섹션 (모바일-친화적 레이아웃) */}
+        {/* 미니 프로필 (우측) */}
         <div
           className={`
               flex items-center gap-1 rounded-full 
-              transition-all duration-500 origin-top
-              // showMiniProfile 상태에 따라 애니메이션 및 클릭 가능 여부 제어
+              transition-all duration-500 origin-right
               ${showMiniProfile ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-90 pointer-events-none'}
             `}
         >
-          {/* 이미지 컨테이너 (모든 해상도에서 표시) */}
-          <div className="relative w-9 h-9 lg:w-12 lg:h-12 flex-shrink-0">
-            {/* 핑(Ping) 효과를 위한 배경 요소 */}
+          {/* 텍스트 (모바일 숨김) */}
+          <div className="hidden sm:block text-xs lg:text-sm font-bold text-body mr-3 group">
+            안녕하세요! <span className="text-main">Front-End 개발자</span> 장한옥입니다.
+          </div>
+
+          {/* 이미지 컨테이너 */}
+          <div className="relative w-10 h-10 lg:w-12 lg:h-12 flex-shrink-0">
             <motion.div
               className="absolute inset-0 rounded-full bg-main"
               animate={{
                 scale: [1, 1.2, 1],
-                opacity: [0.3, 0.5, 0.2],
+                opacity: [0.2, 0.4, 0.1],
               }}
               transition={{
                 duration: 2,
@@ -170,8 +242,7 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
                 ease: "easeInOut",
               }}
             />
-            {/* 실제 이미지 및 아이콘 컨테이너 */}
-            <div className="relative w-full h-full rounded-full flex-shrink-0 border-1 lg:border-2 border-background ring-1 ring-main/50 relative hover:ring-main/80 transition-all group z-10 backdrop-blur">
+            <div className="relative w-full h-full rounded-full flex-shrink-0 border-2 border-background ring-1 ring-main/50 hover:ring-main/80 transition-all group z-10 backdrop-blur">
               <Image
                 src="/image/nomad_coder_happy.png"
                 width={32}
@@ -180,51 +251,53 @@ const Header = ({ showMiniProfile }: HeaderProps) => {
                 unoptimized={true}
                 className="rounded-full object-cover w-full h-full"
               />
-              {/* 스피커 아이콘 (모든 해상도에서 표시) */}
               <AnimateIcon
                 key={profileViewCount}
                 onClick={handleIconClick}
                 {...animateProps}
                 animateOnViewOnce={false}
-                className="absolute -bottom-2 -right-2 rounded-full bg-main/70 
-              group-hover:bg-main/90 transition-all cursor-pointer p-1"
+                className="absolute -bottom-2 -right-2 rounded-full bg-main text-background hover:bg-main/80 transition-all cursor-pointer p-1"
               >
-                <VolumeIcon className={'text-muted h-3 w-3 lg:h-3.5 lg:w-3.5 hover:opacity-80'} />
+                <VolumeIcon className={'h-3 w-3 lg:h-3.5 lg:w-3.5'} />
               </AnimateIcon>
             </div>
           </div>
-
-          {/* 텍스트 (모바일에서는 숨김, sm(태블릿) 이상에서 표시) */}
-          <div className="hidden sm:block text-xs lg:text-sm font-bold text-body ml-2 whitespace-nowrap group">
-            안녕하세요! <span className="gradient-text">Front-End 개발자</span> 장한옥입니다.
-          </div>
-        </div>
-
-        {/* 2. 우측 그룹 (프로필 + 내비게이션) */}
-        <div className="flex items-center space-x-4 md:space-x-6">
-          {/* 2b. 내비게이션 링크 */}
-          <nav className="flex items-center space-x-4 md:space-x-6 text-xs lg:text-sm font-semibold">
-            <Link
-              href="/portfolio"
-              className={`transition-all hover:text-sub ${isLinkActive('/portfolio') ? 'text-main' : 'text-body'}`}
-            >
-              Portfolio
-            </Link>
-            <Link
-              href="/blog"
-              className={`transition-all hover:text-sub ${isLinkActive('/blog') ? 'text-main' : 'text-body'}`}
-            >
-              Blog
-            </Link>
-          </nav>
-
-          {/* 테마 토글 버튼 추가 */}
-          <div className="flex items-center">
-            <ThemeToggle />
-          </div>
         </div>
       </div>
-    </header >
+
+      <div
+        className={`${isVisible ? 'flex' : 'hidden'} w-full overflow-hidden bg-background/60 backdrop-blur-sm border-b border-border/10 items-center justify-between px-6 md:px-10 h-12 md:h-14`}
+      >
+        <nav className="flex items-center space-x-6 md:space-x-8 text-sm lg:text-base font-bold">
+          {/* 포트폴리오를 랜딩페이지에 통합했으므로 메인으로 가도록 처리, 블로그는 그대로 유지 */}
+          <Link
+            href="/"
+            className={`transition-colors duration-300 hover:text-main ${pathname === '/' ? 'text-main' : 'text-body'}`}
+          >
+            Home
+          </Link>
+          <Link
+            href="/blog"
+            className={`transition-colors duration-300 hover:text-main ${isLinkActive('/blog') ? 'text-main' : 'text-body'}`}
+          >
+            Blog
+          </Link>
+          {isAdmin && (
+            <Link
+              href="/admin/stats"
+              className={`transition-colors duration-300 hover:text-main ${isLinkActive('/admin/stats') ? 'text-main' : 'text-body'}`}
+            >
+              Stats
+            </Link>
+          )}
+        </nav>
+
+        {/* 테마 토글 버튼 추가 */}
+        <div className="flex items-center">
+          <ThemeToggle />
+        </div>
+      </div>
+    </header>
   );
 };
 

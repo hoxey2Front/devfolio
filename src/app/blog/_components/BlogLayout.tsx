@@ -119,7 +119,7 @@ export function BlogLayout({ children }: BlogLayoutProps) {
       </div>
     );
     return (
-      <div className="w-full max-w-7xl mx-auto px-6" >
+      <div className="w-full max-w-6xl mx-auto px-6 pt-32 md:pt-40" >
         {/* BlogHeader 대신 간략한 스켈레톤 헤더 */}
         <h1 className="text-4xl font-extrabold tracking-wide lg:text-5xl gradient-text w-fit">Dev Blog</h1>
         <div className='flex justify-between items-center mt-4 mb-12'>
@@ -140,7 +140,7 @@ export function BlogLayout({ children }: BlogLayoutProps) {
 
   if (isError || !posts) {
     return (
-      <div className="w-full max-w-7xl mx-auto px-6">
+      <div className="w-full max-w-6xl mx-auto px-6 pt-32 md:pt-40">
         <GradientHeadline text="Dev Blog" />
         <p className="text-base md:text-lg lg:text-lg text-body mt-4 mb-12">
           제가 작성한 블로그 포스트들을 소개합니다.
@@ -160,7 +160,7 @@ export function BlogLayout({ children }: BlogLayoutProps) {
   const typedPosts: Post[] = posts as Post[];
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-6">
+    <div className="w-full max-w-6xl mx-auto px-6 pt-32 md:pt-40">
       {/* 🚀 BlogHeader는 Layout에 고정 */}
       <BlogHeader
         viewMode={viewMode}

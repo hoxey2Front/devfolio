@@ -1,12 +1,12 @@
 'use client'
 
-import { type ReactNode, useState, useEffect } from "react";
+import { type ReactNode, useState, useEffect, useRef } from "react";
 import { Bot } from "@/components/animate-ui/icons/bot";
 import { AnimateIcon } from "@/components/animate-ui/icons/icon";
 import { Send } from "@/components/animate-ui/icons/send";
 import { Star } from "@/components/animate-ui/icons/star";
 import Link from "next/link";
-import { Lock } from "@/components/animate-ui/icons/lock";
+import { Lock, Phone, Mail, MapPin } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { trackEvent } from "@/lib/analytics";
 
 /**
  * AnimateIcon의 animateOnHover prop을 부모 Link의 hover 상태로 제어하는 컴포넌트
@@ -157,6 +158,29 @@ const Footer = () => {
 
   // ... existing code ...
 
+  // 3D Tilt Effect Logic
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const degX = (y - centerY) / 10;
+    const degY = (centerX - x) / 10;
+    setRotateX(degX * 0.5); // Reduce tilt intensity for subtler look
+    setRotateY(degY * 0.5);
+  };
+
+  const handleMouseLeave = () => {
+    setRotateX(0);
+    setRotateY(0);
+  };
+
   // 💡 로그아웃 핸들러 (다이얼로그 열기)
   const handleLogout = () => {
     setIsLogoutDialogOpen(true);
@@ -170,96 +194,128 @@ const Footer = () => {
   };
 
   return (
-    // ⭐️ TooltipProvider로 전체 Footer를 감싸서 Tooltip 기능을 활성화합니다.
     <TooltipProvider>
-      <footer className="
-        py-4 sm:py-6 lg:py-8
-        border-t border-caption/40
-        text-sm text-body
-        
-        /* ⭐️ 수정: flex로 기본 설정하고 justify-between을 적용하여 좌우로 붙입니다. */
-        flex flex-wrap justify-between items-center 
-        sm:grid grid-cols-3
-        px-2 sm:px-4 md:px-8 
-      ">
+      <footer className="w-full pt-20 pb-12 px-6 overflow-hidden">
+        <motion.div
+          ref={cardRef}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          animate={{ rotateX, rotateY }}
+          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          className="relative max-w-4xl mx-auto rounded-3xl overflow-hidden border border-white/10 dark:border-white/5 shadow-2xl group/card"
+          style={{ transformStyle: "preserve-3d" }}
+        >
+          {/* Card Background Overlay */}
+          <div className="absolute inset-0 bg-white dark:bg-[#121212] opacity-80" />
+          <div className="absolute inset-0 bg-gradient-to-br from-main/5 via-transparent to-main/10 opacity-50" />
+          <div className="absolute -inset-[100%] animate-spin-slow bg-[conic-gradient(from_0deg,transparent_0deg,transparent_300deg,var(--main)_360deg)] opacity-10 group-hover/card:opacity-20 transition-opacity" />
 
-        {/* 1. 왼쪽 빈 공간 (첫 번째 컬럼) - sm 미만에서는 완전히 숨김 */}
-        <div className="
-          hidden sm:flex sm:col-span-1 
-          justify-start
-        ">
-          {/* 💡 관리자 버튼: showAdminButton이 true일 때만 표시 (애니메이션 적용) */}
-          <AnimatePresence mode="wait">
+          {/* Card Content */}
+          <div className="relative p-8 md:p-12 flex flex-col md:flex-row justify-between items-start gap-12 group/content">
+            {/* Left Section: Branding */}
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-3xl md:text-4xl font-black gradient-text tracking-tighter">
+                    DevFolio
+                  </h2>
+                  <div className="h-6 w-px bg-caption/30 rotate-12" />
+                </div>
+                <p className="text-body text-xs max-w-xs leading-relaxed">
+                  열정과 기술, 그리고 창의적인 시각으로 <br className="hidden sm:block" />
+                  완성도 높은 디지털 경험을 만들어갑니다.
+                </p>
+              </div>
+
+              {/* Hidden Admin Trigger */}
             {showAdminButton && (
-              <motion.div
-                key="admin-button"
-                initial={{ x: -50, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -50, opacity: 0 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 25,
-                  duration: 0.3
-                }}
-              >
+              <div className="inline-block">
                 {isAdmin ? (
-                  // 로그인 상태: 로그아웃 버튼
-                  <IconLink
-                    tooltipText="로그아웃"
+                  <button
                     onClick={handleLogout}
-                    tooltipVariant="destructive"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-destructive/10 text-destructive text-xs font-bold hover:bg-destructive hover:text-white transition-all"
                   >
-                    <LogOut className="w-8 h-8 sm:w-10 sm:h-10 p-1.5 sm:p-2 group-hover:text-destructive" />
-                  </IconLink>
+                    <LogOut size={14} /> ADMIN SIGN OUT
+                  </button>
                 ) : (
-                  // 비로그인 상태: 로그인 버튼
-                  <IconLink
-                    tooltipText="관리자 로그인"
+                  <button
                     onClick={() => setIsDialogOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-main/20 text-main text-xs font-bold hover:bg-main hover:text-black transition-all"
                   >
-                    <Lock className="w-8 h-8 sm:w-10 sm:h-10 p-1.5 sm:p-2 group-hover:text-main" />
-                  </IconLink>
+                    <Lock size={14} /> ADMIN ACCESS
+                  </button>
                 )}
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
-        </div>
+            </div>
 
-        {/* 2. 저작권 텍스트 (두 번째 컬럼) - 모바일(sm 미만)에서 좌측에 배치됨 */}
-        <div className="
-          text-xs sm:text-sm 
-          whitespace-nowrap 
-          /* sm 미만에서 flex의 첫 번째 요소로 좌측에 배치, sm 이상에서 중앙 그리드 컬럼에 배치 */
-          sm:col-span-1 sm:text-center
-        ">
-          © 2025 <span className="gradient-text">DevFolio</span> Develop by Next.js
-        </div>
+            {/* Right Section: Contacts */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 w-full md:w-auto">
+              <div className="flex flex-col gap-4">
+                <h3 className="text-xs font-bold text-caption uppercase tracking-[0.3em] mb-2 opacity-50 text-right md:text-left">
+                  Contact
+                </h3>
 
-        {/* 3. 연락처 섹션 (세 번째 컬럼) - 모바일(sm 미만)에서 우측에 배치됨 */}
-        <div className="
-          flex justify-end gap-2 sm:gap-4 items-center
-          sm:col-span-1
-        ">
-          {/* justify-end로 아이콘들을 오른쪽 끝에 배치 */}
+                <div className="flex flex-wrap md:flex-col justify-end md:justify-start gap-4">
+                  <a
+                    href="mailto:hoxey2react@gmail.com"
+                    className="flex items-center gap-3 text-body hover:text-main transition-colors group/link p-2 -m-2"
+                    onClick={() => trackEvent('CLICK_EMAIL', { email: 'hoxey2react@gmail.com' })}
+                  >
+                    <div className="size-10 rounded-xl bg-body/5 flex-center group-hover/link:bg-main/10 group-hover/link:scale-110 transition-all">
+                      <Mail size={15} />
+                    </div>
+                    <span className="hidden lg:inline text-xs">hoxey2react@gmail.com</span>
+                  </a>
 
-          {/* IconLink 컴포넌트 사용 및 tooltipText prop 추가 */}
-          <IconLink href="tel:01032893377" tooltipText="전화 문의">
-            <MessageSquareMore className="w-8 h-8 sm:w-10 sm:h-10 p-1.5 sm:p-2 group-hover:text-main" />
-          </IconLink>
+                  <a
+                    href="tel:01032893377"
+                    className="flex items-center gap-3 text-body hover:text-main transition-colors group/link p-2 -m-2"
+                    onClick={() => trackEvent('CLICK_PHONE', { phone: '010-3289-3377' })}
+                  >
+                    <div className="size-10 rounded-xl bg-body/5 flex-center group-hover/link:bg-main/10 group-hover/link:scale-110 transition-all">
+                      <Phone size={15} />
+                    </div>
+                    <span className="hidden lg:inline text-xs">+82 10-3289-3377</span>
+                  </a>
 
-          <IconLink href="mailto:hoxey2react@gmail.com" tooltipText="이메일 문의">
-            <Send className="w-8 h-8 sm:w-10 sm:h-10 p-1.5 sm:p-2 group-hover:text-main" />
-          </IconLink>
+                  <div className="flex gap-4 pt-2 md:pt-4">
+                    <IconLink
+                      href="/blog"
+                      target='_blank'
+                      tooltipText="기술 블로그"
+                      onClick={() => trackEvent('NAVIGATE_BLOG_EXTERNAL')}
+                    >
+                      <Star className="w-9 h-9 p-2 group-hover:text-main" />
+                    </IconLink>
+                    <IconLink
+                      href="https://github.com/hoxey2Front"
+                      target='_blank'
+                      tooltipText="GitHub"
+                      onClick={() => trackEvent('NAVIGATE_GITHUB')}
+                    >
+                      <Bot className="w-9 h-9 p-2 group-hover:text-main" />
+                    </IconLink>
+                    <IconLink
+                      href="#"
+                      tooltipText="South Korea"
+                      onClick={() => trackEvent('CLICK_ADDRESS')}
+                    >
+                      <MapPin className="w-9 h-9 p-2 group-hover:text-main" />
+                    </IconLink>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <IconLink href="/blog" target='_blank' tooltipText="기술 블로그">
-            <Star className="w-8 h-8 sm:w-10 sm:h-10 p-1.5 sm:p-2 group-hover:text-main" />
-          </IconLink>
-
-          <IconLink href="https://github.com/hoxey2Front" target='_blank' tooltipText="GitHub">
-            <Bot className="w-8 h-8 sm:w-10 sm:h-10 p-1.5 sm:p-2 group-hover:text-main" />
-          </IconLink>
-        </div>
+          {/* Bottom Strip */}
+          <div className="border-t border-white/5 dark:border-white/[0.03] p-6 text-center">
+            <span className="text-xs uppercase tracking-[0.5em] text-caption font-medium">
+              © 2025 DevFolio • ALL RIGHTS RESERVED • DEVELOPED WITH NEXT.JS
+            </span>
+          </div>
+        </motion.div>
       </footer>
 
       {/* 💡 AdminLoginDialog 추가 */}

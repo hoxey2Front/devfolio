@@ -52,6 +52,7 @@ export default function BlogEditPage({ params }: EditorPageProps) {
 
   const [tags, setTags] = React.useState<string[]>([]);
   const [tagInput, setTagInput] = React.useState('');
+  const [isInitialLoading, setIsInitialLoading] = React.useState(true);
 
   const {
     control,
@@ -88,7 +89,29 @@ export default function BlogEditPage({ params }: EditorPageProps) {
         setValue('tags', post.tags.join(', '));
       }
     }
+    // 데이터 로드가 완료되었음을 설정 (캐시에 없어도 일단 홈으로 보내거나 처리를 해야겠지만, 우선 스켈레톤 노출용)
+    const timeout = setTimeout(() => setIsInitialLoading(false), 500);
+    return () => clearTimeout(timeout);
   }, [id, queryClient, setValue]);
+
+  if (isInitialLoading) {
+    return (
+      <div className="min-h-screen bg-background pt-28 md:pt-36">
+        <div className="sticky top-28 md:top-36 z-10 backdrop-blur border-b border-border">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <Loader2 className="animate-spin text-main" />
+          </div>
+        </div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-pulse">
+          <div className="space-y-8">
+            <div className="h-12 w-3/4 bg-muted rounded" />
+            <div className="h-6 w-1/2 bg-muted rounded" />
+            <div className="h-64 w-full bg-muted rounded" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // 태그 추가 핸들러
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -200,9 +223,9 @@ export default function BlogEditPage({ params }: EditorPageProps) {
   const coverImage = watch('coverImage');
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-28 md:pt-36">
       {/* Header with Actions */}
-      <div className="sticky top-0 z-10 backdrop-blur border-b border-border">
+      <div className="sticky top-28 md:top-36 z-10 backdrop-blur border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-base font-semibold text-foreground">글 수정</h1>

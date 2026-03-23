@@ -216,9 +216,9 @@ export default function BlogEditor() {
   const coverImage = watch('coverImage');
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-28 md:pt-36">
       {/* Header with Actions */}
-      <div className="sticky top-0 z-10 backdrop-blur-xs border-b border-border">
+      <div className="sticky top-28 md:top-36 z-10 backdrop-blur-xs border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-base font-semibold text-foreground">새 글 작성</h1>
