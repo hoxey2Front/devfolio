@@ -16,6 +16,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import RotatingTyped from '@/components/common/RotatingTyped';
 import Footer from '@/components/layout/Footer';
 import { useAdmin } from '@/contexts/AdminContext';
@@ -346,7 +347,23 @@ export default function Home() {
 
             <div className="flex-1 flex flex-col justify-start relative">
               {isLoading ? (
-                <div className="w-full text-center py-20 text-body">프로젝트를 불러오는 중...</div>
+                <div className="relative flex overflow-hidden w-full px-6">
+                  <div className="flex gap-10 py-10">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <div key={i} className="w-[300px] md:w-[400px] shrink-0 border border-border/40 rounded-3xl p-6 space-y-4 bg-card/40 animate-pulse">
+                        <Skeleton className="aspect-video w-full rounded-2xl bg-muted" />
+                        <div className="space-y-2">
+                          <Skeleton className="h-6 w-3/4 bg-muted" />
+                          <Skeleton className="h-4 w-1/2 bg-muted/60" />
+                        </div>
+                        <div className="flex gap-2">
+                          <Skeleton className="h-5 w-12 rounded-full bg-muted/40" />
+                          <Skeleton className="h-5 w-12 rounded-full bg-muted/40" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               ) : sortedProjects.length === 0 ? (
                 <div className="w-full text-center py-20 text-body">
                   <p>등록된 프로젝트가 없습니다.</p>

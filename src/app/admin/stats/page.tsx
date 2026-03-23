@@ -161,10 +161,54 @@ export default function AdminStatsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background pt-28 md:pt-36 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="animate-spin size-12 text-main" />
-          <p className="text-muted-foreground animate-pulse font-medium">실시간 통계 데이터를 불러오는 중...</p>
+      <div className="min-h-screen bg-background pt-28 md:pt-36 pb-20 mt-10">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-col gap-2 mb-10">
+            <Skeleton className="h-10 w-64 bg-muted" />
+            <Skeleton className="h-6 w-96 bg-muted/60" />
+          </div>
+
+          {/* 1. Overview Cards Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i} className="border-border/50 bg-card/40 animate-pulse shadow-sm h-32">
+                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                  <Skeleton className="h-4 w-24 bg-muted" />
+                  <Skeleton className="h-4 w-4 rounded-full bg-muted" />
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Skeleton className="h-8 w-20 bg-muted" />
+                  <Skeleton className="h-3 w-32 bg-muted/40" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            {/* 2. Charts Skeleton */}
+            <Card className="border-border/50 bg-card/40 animate-pulse backdrop-blur-sm h-[400px]">
+              <CardHeader>
+                <Skeleton className="h-6 w-40 bg-muted" />
+              </CardHeader>
+              <CardContent className="h-[300px] flex items-end gap-2 px-6">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <Skeleton 
+                    key={i} 
+                    className="flex-1 bg-muted/20" 
+                    style={{ height: `${Math.random() * 60 + 20}%` }} 
+                  />
+                ))}
+              </CardContent>
+            </Card>
+            <Card className="border-border/50 bg-card/40 backdrop-blur-sm h-[400px]">
+              <CardHeader>
+                <Skeleton className="h-6 w-40 bg-muted" />
+              </CardHeader>
+              <CardContent className="h-[300px] flex items-center justify-center">
+                <Skeleton className="h-full w-full bg-muted/10 rounded-lg" />
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     );

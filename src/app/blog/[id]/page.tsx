@@ -5,6 +5,7 @@ import { notFound, useRouter } from 'next/navigation';
 import { TiptapViewer } from '@/components/editor/TiptapViewer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { TimelinBadge } from '@/components/common/TimelinBadge';
 import { TableOfContents } from '@/components/blog/TableOfContents';
 import { ArrowLeft, Edit, Trash2, Loader2 } from 'lucide-react';
@@ -44,12 +45,56 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="animate-spin size-10 md:size-12 text-main" />
-          <p className="text-base md:text-lg text-muted-foreground animate-pulse">
-            포스트를 불러오는 중입니다...
-          </p>
+      <div className="min-h-screen bg-background pt-28 md:pt-36">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-6">
+            <Skeleton className="h-9 w-32 bg-muted/60" />
+            <div className="flex gap-2">
+              <Skeleton className="h-8 w-16 bg-muted/40" />
+              <Skeleton className="h-8 w-16 bg-muted/40" />
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 animate-pulse">
+          <div className="flex gap-16">
+            <article className="flex-1 min-w-0">
+              <header className="mb-10">
+                <Skeleton className="h-12 w-3/4 mb-6 bg-muted" />
+                <div className="flex justify-between items-center mb-8">
+                  <Skeleton className="h-6 w-24 bg-muted/40" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-5 w-12 rounded-full bg-muted/30" />
+                    <Skeleton className="h-5 w-12 rounded-full bg-muted/30" />
+                  </div>
+                </div>
+                <div className="border-l-4 border-border/40 pl-4 space-y-2">
+                  <Skeleton className="h-4 w-full bg-muted/20" />
+                  <Skeleton className="h-4 w-5/6 bg-muted/20" />
+                </div>
+              </header>
+              <div className="border-t border-border/60 mb-12" />
+              <div className="space-y-4">
+                <Skeleton className="h-4 w-full bg-muted/10" />
+                <Skeleton className="h-4 w-full bg-muted/10" />
+                <Skeleton className="h-4 w-2/3 bg-muted/10" />
+                <div className="pt-8 space-y-4">
+                  <Skeleton className="h-4 w-full bg-muted/10" />
+                  <Skeleton className="h-4 w-5/6 bg-muted/10" />
+                </div>
+              </div>
+            </article>
+            <aside className="hidden xl:block w-64 shrink-0">
+              <div className="space-y-4">
+                <Skeleton className="h-6 w-32 bg-muted/40" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full bg-muted/20" />
+                  <Skeleton className="h-4 w-full bg-muted/20" />
+                  <Skeleton className="h-4 w-5/6 bg-muted/20" />
+                </div>
+              </div>
+            </aside>
+          </div>
         </div>
       </div>
     );
