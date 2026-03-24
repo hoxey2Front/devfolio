@@ -4,11 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { 
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, 
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
+import {
+  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
-import { 
+import {
   TrendingUp, Users, Clock, Zap, Monitor, MousePointerClick, Info, Loader2
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
@@ -74,9 +74,9 @@ export default function AdminStatsPage() {
         const topPosts = Object.entries(postCounts)
           .map(([path, views]) => {
             const id = path.replace('/blog/', '');
-            return { 
+            return {
               name: postTitleMap[id] || id, // 타이틀이 없으면 ID 유지
-              views 
+              views
             };
           })
           .sort((a, b) => b.views - a.views)
@@ -88,7 +88,7 @@ export default function AdminStatsPage() {
           const d = new Date(v.created_at);
           // 로컬 시간 기준으로 YYYY-MM-DD 키 생성
           const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-          
+
           if (!perfMap[dateKey]) perfMap[dateKey] = { lcp: 0, count: 0 };
           perfMap[dateKey].lcp += (v.value?.value || 0);
           perfMap[dateKey].count += 1;
@@ -98,7 +98,7 @@ export default function AdminStatsPage() {
           .map(([dateStr, val]) => {
             const day = dateStr.split('-')[2]; // YYYY-MM-DD 에서 DD 추출
             return {
-              time: `${parseInt(day)}일`, 
+              time: `${parseInt(day)}일`,
               lcp: Number((val.lcp / val.count / 1000).toFixed(2)), // ms -> s
               fcp: Number((val.lcp / val.count / 1000 * 0.7).toFixed(2)) // mock FCP
             };
@@ -121,8 +121,8 @@ export default function AdminStatsPage() {
 
         // Overview 요약
         const uniqueVisitors = new Set(pageViews.map(v => v.session_id).filter(Boolean)).size;
-        const avgLcp = vitals.length > 0 
-          ? (vitals.filter(v => v.event_name === 'LCP').reduce((acc, curr) => acc + (curr.value?.value || 0), 0) / vitals.length / 1000).toFixed(2) 
+        const avgLcp = vitals.length > 0
+          ? (vitals.filter(v => v.event_name === 'LCP').reduce((acc, curr) => acc + (curr.value?.value || 0), 0) / vitals.length / 1000).toFixed(2)
           : '0.00';
         const totalViews = pageViews.length;
         const clickRate = totalViews > 0 ? ((clicks.length / totalViews) * 100).toFixed(1) : '0.0';
@@ -192,10 +192,10 @@ export default function AdminStatsPage() {
               </CardHeader>
               <CardContent className="h-[300px] flex items-end gap-2 px-6">
                 {Array.from({ length: 12 }).map((_, i) => (
-                  <Skeleton 
-                    key={i} 
-                    className="flex-1 bg-muted/20" 
-                    style={{ height: `${Math.random() * 60 + 20}%` }} 
+                  <Skeleton
+                    key={i}
+                    className="flex-1 bg-muted/20"
+                    style={{ height: `${Math.random() * 60 + 20}%` }}
                   />
                 ))}
               </CardContent>
@@ -259,7 +259,7 @@ export default function AdminStatsPage() {
                     <XAxis type="number" hide />
                     <YAxis dataKey="name" type="category" width={120} axisLine={false} tickLine={false} fontSize={10} />
                     <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                    <Bar dataKey="views" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
+                    <Bar dataKey="views" fill="#FEE500" radius={[0, 4, 4, 0]} barSize={20} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
@@ -284,11 +284,11 @@ export default function AdminStatsPage() {
                     <XAxis dataKey="time" fontSize={10} />
                     <YAxis fontSize={10} />
                     <Tooltip />
-                    <Line type="monotone" dataKey="lcp" stroke="#3b82f6" strokeWidth={2} name="LCP (s)" />
+                    <Line type="monotone" dataKey="lcp" stroke="#FEE500" strokeWidth={2} name="LCP (s)" />
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
-               <div className="h-full flex items-center justify-center text-muted-foreground text-sm italic">데이터가 충분하지 않습니다.</div>
+                <div className="h-full flex items-center justify-center text-muted-foreground text-sm italic">데이터가 충분하지 않습니다.</div>
               )}
             </CardContent>
           </Card>
@@ -304,12 +304,12 @@ export default function AdminStatsPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-body text-sm md:text-base leading-relaxed">
             <p>
-              본 대시보드는 <strong>Supabase RLS(Row Level Security)</strong>가 적용된 테이블을 기반으로 제작되었습니다. 
-              사용자의 모든 이벤트는 익명화되어 수집되며, Next.js의 <code>usePathname</code> 훅을 통해 페이지 전환을 감지하고 
+              본 대시보드는 <strong>Supabase RLS(Row Level Security)</strong>가 적용된 테이블을 기반으로 제작되었습니다.
+              사용자의 모든 이벤트는 익명화되어 수집되며, Next.js의 <code>usePathname</code> 훅을 통해 페이지 전환을 감지하고
               브라우저의 <code>PerformanceObserver</code> 인터페이스 데이터(Web Vitals)를 함께 전송하여 실제 성능 지표를 도출합니다.
             </p>
             <p>
-              데이터 수집 시 <strong>Optimistic Tracking</strong> 기법을 고려하여, 추적 로직이 메인 스레드의 성능(FID/INP)에 영향을 주지 않도록 
+              데이터 수집 시 <strong>Optimistic Tracking</strong> 기법을 고려하여, 추적 로직이 메인 스레드의 성능(FID/INP)에 영향을 주지 않도록
               설계되었습니다. 수집된 기기 통계 및 브라우저 비율 데이터를 참고하여 향후 크로스 브라우징 대응 우선순위를 결정합니다.
             </p>
           </CardContent>
