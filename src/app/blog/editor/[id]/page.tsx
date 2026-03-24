@@ -225,7 +225,7 @@ export default function BlogEditPage({ params }: EditorPageProps) {
   return (
     <div className="min-h-screen bg-background pt-28 md:pt-36">
       {/* Header with Actions */}
-      <div className="sticky top-28 md:top-36 z-10 backdrop-blur border-b border-border">
+      <div className="border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-base font-semibold text-foreground">글 수정</h1>
