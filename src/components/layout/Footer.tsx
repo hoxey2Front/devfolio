@@ -30,6 +30,7 @@ import {
 import { LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackEvent } from "@/lib/analytics";
+import { Paintbrush } from "@/components/animate-ui/icons/paintbrush";
 
 /**
  * AnimateIcon의 animateOnHover prop을 부모 Link의 hover 상태로 제어하는 컴포넌트
@@ -228,25 +229,25 @@ const Footer = () => {
               </div>
 
               {/* Hidden Admin Trigger */}
-            {showAdminButton && (
-              <div className="inline-block">
-                {isAdmin ? (
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-destructive/10 text-destructive text-xs font-bold hover:bg-destructive hover:text-white transition-all"
-                  >
-                    <LogOut size={14} /> ADMIN SIGN OUT
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setIsDialogOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-main/20 text-main text-xs font-bold hover:bg-main hover:text-black transition-all"
-                  >
-                    <Lock size={14} /> ADMIN ACCESS
-                  </button>
-                )}
-              </div>
-            )}
+              {showAdminButton && (
+                <div className="inline-block">
+                  {isAdmin ? (
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full bg-destructive/10 text-destructive text-xs font-bold hover:bg-destructive hover:text-white transition-all"
+                    >
+                      <LogOut size={14} /> ADMIN SIGN OUT
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setIsDialogOpen(true)}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full bg-main/20 text-main text-xs font-bold hover:bg-main hover:text-black transition-all"
+                    >
+                      <Lock size={14} /> ADMIN ACCESS
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Right Section: Contacts */}
@@ -280,6 +281,15 @@ const Footer = () => {
                   </a>
 
                   <div className="flex gap-4 pt-2 md:pt-4">
+                    <IconLink
+                      href="https://www.figma.com/design/tZdfnvZIQW6RgoXFW00NMA/Devfolio?node-id=142-118&t=dA80z1eYbpeBoqec-1"
+                      target='_blank'
+                      tooltipText="Figma"
+                      onClick={() => trackEvent('NAVIGATE_FIGMA')}
+                    >
+                      <Paintbrush className="w-9 h-9 p-2 group-hover:text-main" />
+                    </IconLink>
+
                     <IconLink
                       href="/blog"
                       target='_blank'
