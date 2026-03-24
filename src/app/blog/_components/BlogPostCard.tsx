@@ -35,19 +35,19 @@ export function BlogPostCard({ post, isSearchResult = false, shadowEffect }: Blo
         <Card shadowEffect className="h-full flex flex-col border-border/40 bg-card transition-all duration-300 group-hover:border-main/30">
           <CardHeader className="flex-1 pb-4">
             <div className="flex flex-col gap-2">
-              <CardTitle className="text-xl font-bold leading-tight text-foreground group-hover:text-main line-clamp-2 transition-colors duration-300">
+              <CardTitle className="text-2xl font-bold leading-tight text-foreground group-hover:text-main line-clamp-2 transition-colors duration-300 tracking-tight">
                 {post.title}
               </CardTitle>
               <span className="text-xs font-medium text-caption/80">{formattedDate}</span>
             </div>
-            <CardDescription className="mt-3 text-sm text-body leading-relaxed line-clamp-3">
+            <CardDescription className="mt-4 text-sm md:text-base text-body leading-relaxed line-clamp-3">
               {post.summary || plainTextContent.slice(0, 100) + '...'}
             </CardDescription>
           </CardHeader>
           <CardContent className="mt-auto pt-0 pb-6">
             <div className="flex flex-wrap gap-1.5">
               {post.tags?.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-[10px] px-2 py-0.5 bg-main/5 text-main/80 hover:bg-main/10 hover:text-main border-none transition-colors">
+                <Badge key={tag} variant="secondary" className="text-[10px] uppercase font-bold px-2 py-0.5 bg-main/5 text-main/80 group-hover:bg-main/10 group-hover:text-main border-none transition-colors">
                   {tag}
                 </Badge>
               ))}

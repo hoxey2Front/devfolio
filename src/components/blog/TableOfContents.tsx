@@ -64,7 +64,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
         });
       },
       {
-        rootMargin: '-80px 0px -80% 0px',
+        rootMargin: '-100px 0px -65% 0px',
         threshold: 0,
       }
     );
@@ -76,7 +76,21 @@ export function TableOfContents({ content }: TableOfContentsProps) {
       }
     });
 
-    return () => observer.disconnect();
+    // 페이지 최하단 도달 감지하여 마지막 목차 활성화
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100) {
+        if (headings.length > 0) {
+          setActiveId(headings[headings.length - 1].id);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, [headings]);
 
   const handleClick = (id: string) => {
@@ -101,30 +115,39 @@ export function TableOfContents({ content }: TableOfContentsProps) {
 
   const NavContent = ({ isMobile = false }: { isMobile?: boolean }) => (
     <div className={cn("space-y-1", isMobile && "px-2")}>
-      {!isMobile && <p className="text-sm font-semibold text-foreground mb-4 pl-4 border-l-2 border-transparent">목차</p>}
-      <div className={cn("border-l border-border/40", isMobile && "border-none")}>
+      {!isMobile && (
+        <p className="text-xs uppercase tracking-widest font-bold text-caption mb-6 pl-4">
+          On this page
+        </p>
+      )}
+      <div className={cn("border-l border-border/30", isMobile && "border-none")}>
         {headings.map(({ id, text, level }) => (
           <button
             key={id}
             onClick={() => handleClick(id)}
             className={cn(
-              'block w-full text-left text-sm py-1.5 transition-all outline-none mb-1',
+              'block w-full text-left text-sm py-1.5 transition-all outline-none mb-1 group relative overflow-hidden',
               !isMobile && 'border-l-2 -ml-px',
               activeId === id
                 ? cn(
-                  'text-primary font-medium bg-primary/5',
+                  'text-main font-semibold',
                   !isMobile && 'border-main'
                 )
                 : cn(
-                  'text-muted-foreground hover:text-foreground hover:bg-muted/30',
-                  !isMobile && 'border-transparent hover:border-main/50'
+                  'text-body/60 hover:text-foreground',
+                  !isMobile && 'border-transparent hover:border-border'
                 ),
               level === 1 && (isMobile ? 'pl-2' : 'pl-4'),
-              level === 2 && (isMobile ? 'pl-6' : 'pl-8'),
-              level === 3 && (isMobile ? 'pl-10' : 'pl-12')
+              level === 2 && (isMobile ? 'pl-6' : 'pl-8 text-[1.3rem]'),
+              level === 3 && (isMobile ? 'pl-10' : 'pl-12 text-[1.2rem]')
             )}
           >
-            {text}
+            <span className={cn(
+              "transition-transform duration-300 block max-w-full",
+              activeId === id ? "translate-x-1" : "group-hover:translate-x-1"
+            )}>
+              {text}
+            </span>
           </button>
         ))}
       </div>

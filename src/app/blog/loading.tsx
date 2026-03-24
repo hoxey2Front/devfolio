@@ -27,21 +27,21 @@ export default function BlogLoading() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="flex flex-col gap-4 p-6 border border-border/40 rounded-xl bg-card/40 animate-pulse">
-            <div className="flex flex-col gap-2">
-              <Skeleton className="h-7 w-full bg-muted" />
-              <Skeleton className="h-7 w-2/3 bg-muted" />
+          <div key={i} className="flex flex-col gap-4 p-8 border border-border/30 rounded-2xl bg-card/40 animate-pulse h-full">
+            <div className="flex flex-col gap-3">
+              <Skeleton className="h-8 w-full bg-muted" />
+              <Skeleton className="h-8 w-2/3 bg-muted" />
+              <Skeleton className="h-3 w-32 bg-muted/60 mt-1" />
             </div>
-            <Skeleton className="h-4 w-24 bg-muted/60" />
             <div className="space-y-2 mt-4">
-              <Skeleton className="h-4 w-full bg-muted/40" />
-              <Skeleton className="h-4 w-full bg-muted/40" />
-              <Skeleton className="h-4 w-3/4 bg-muted/40" />
+              <Skeleton className="h-4 w-full bg-muted/30" />
+              <Skeleton className="h-4 w-full bg-muted/30" />
+              <Skeleton className="h-4 w-5/6 bg-muted/30" />
             </div>
-            <div className="flex gap-2 mt-auto pt-4">
-              <Skeleton className="h-5 w-12 rounded-full bg-muted/60" />
-              <Skeleton className="h-5 w-12 rounded-full bg-muted/60" />
-              <Skeleton className="h-5 w-12 rounded-full bg-muted/60" />
+            <div className="flex gap-2 mt-auto pt-6">
+              <Skeleton className="h-5 w-14 rounded-md bg-muted/40" />
+              <Skeleton className="h-5 w-14 rounded-md bg-muted/40" />
+              <Skeleton className="h-5 w-14 rounded-md bg-muted/40" />
             </div>
           </div>
         ))}
