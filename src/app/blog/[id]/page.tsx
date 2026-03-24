@@ -48,7 +48,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
       <div className="min-h-screen bg-background pt-28 md:pt-36 animate-pulse">
         {/* Hero Section Skeleton */}
         <div className="w-full bg-main/5 border-b border-border/30 pt-16 md:pt-24 pb-16 md:pb-24 mb-16 px-6">
-          <div className="max-w-4xl mx-auto flex flex-col items-center">
+          <div className="max-w-full mx-auto flex flex-col items-center">
             <Skeleton className="h-12 w-32 rounded-full bg-muted mb-10" />
             <Skeleton className="h-12 w-full max-w-2xl bg-muted mb-10" />
             <div className="flex flex-col items-center gap-6">
@@ -138,13 +138,13 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
     <div className="min-h-screen bg-background pt-28 md:pt-36">
       {/* Hero Section */}
       <header className="w-full bg-main/5 border-b border-border/30 pt-16 md:pt-24 pb-16 md:pb-24 mb-16">
-        <div className="max-w-4xl mx-auto px-6 text-center">
+        <div className="max-w-full mx-auto px-6 text-center">
           <Link href="/blog" className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-background border border-border/50 text-xs font-bold text-main mb-10 hover:border-main transition-all group">
             <ArrowLeft className="size-3 group-hover:-translate-x-1 transition-transform" />
             <span>BACK TO BLOG</span>
           </Link>
           
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-foreground mb-10 leading-[1.1] tracking-tighter">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-foreground mb-10 leading-[1.1] tracking-tighter break-keep break-words [text-wrap:balance]">
             {post.title}
           </h1>
 
